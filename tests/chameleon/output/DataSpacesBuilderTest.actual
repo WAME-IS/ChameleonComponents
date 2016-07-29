@@ -1,0 +1,6 @@
+Doctrine\Common\Collections\Criteria::__set_state(/* #f3a4 */ array(
+	'expression' => NULL,
+	'orderings' => array(),
+	'firstResult' => NULL,
+	'maxResults' => NULL,
+))

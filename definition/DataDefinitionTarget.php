@@ -2,7 +2,9 @@
 
 namespace Wame\ChameleonComponents\Definition;
 
-class DataDefinitionTarget
+use Nette\Object;
+
+class DataDefinitionTarget extends Object
 {
 
     /** @var string|string[] Class name */
@@ -20,7 +22,7 @@ class DataDefinitionTarget
      * @param string|string[] $type
      * @param boolean $multiple
      */
-    public function __construct($type, $list = false, $multiple = false)
+    public function __construct($type, $list = null, $multiple = null)
     {
         $this->type = $type;
         $this->list = $list;

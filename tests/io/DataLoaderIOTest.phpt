@@ -1,14 +1,14 @@
 
 <?php
-
-namespace Wame\Core\Tests\Registers;
+/*
+namespace Wame\ChameleonComponents\Tests\IO;
 
 require_once '../bootstrap.php';
 
 class DataLoaderIOTest extends \Tester\TestCase
 {
 
-    /** @var \Wame\ChameleonComponents\DataSpacesBuilder */
+    /** @var \Wame\ChameleonComponents\DataSpacesBuilder * /
     private $dataSpacesBuilder;
 
     protected function setUp()
@@ -36,3 +36,4 @@ class DataLoaderIOTest extends \Tester\TestCase
 
 $test = new DataLoaderIOTest();
 $test->run();
+*/

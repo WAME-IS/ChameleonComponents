@@ -3,8 +3,9 @@
 namespace Wame\ChameleonComponents\Definition;
 
 use Nette\Application\UI\Control;
+use Nette\Object;
 
-class ControlDataDefinition
+class ControlDataDefinition extends Object
 {
 
     /** @var Control */
@@ -14,11 +15,14 @@ class ControlDataDefinition
     private $definitions;
 
     /** @var ControlDataDefinition[] */
-    public $childs = [];
+    public $children = [];
 
-    public function __construct($control, $definitions = null)
+    /**
+     * @param Control $control
+     * @param DataDefinition[] $definitions
+     */
+    public function __construct(Control $control, $definitions = null)
     {
-
         $this->control = $control;
         if ($definitions) {
             if (is_array($definitions)) {
@@ -48,13 +52,13 @@ class ControlDataDefinition
     /**
      * @return DataDefinition[]
      */
-    function getChilds()
+    function getChildren()
     {
-        return $this->childs;
+        return $this->children;
     }
 
     /**
-     * @param DataDefinition[] $childs
+     * @param DataDefinition[] $definitions
      */
     function setDataDefinitions($definitions)
     {
@@ -70,10 +74,10 @@ class ControlDataDefinition
     }
 
     /**
-     * @param DataDefinition[] $childs
+     * @param DataDefinition[] $children
      */
-    function setChilds($childs)
+    function setChildren($children)
     {
-        $this->childs = $childs;
+        $this->children = $children;
     }
 }

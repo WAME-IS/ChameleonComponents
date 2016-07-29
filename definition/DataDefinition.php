@@ -27,7 +27,7 @@ class DataDefinition extends Object
     /**
      * @return DataDefinitionTarget
      */
-    function getTarget()
+    public function getTarget()
     {
         return $this->target;
     }
@@ -35,7 +35,7 @@ class DataDefinition extends Object
     /**
      * @return Criteria
      */
-    function getKnownProperties()
+    public function getKnownProperties()
     {
         return $this->knownProperties;
     }
@@ -43,7 +43,7 @@ class DataDefinition extends Object
     /**
      * @param DataDefinitionTarget $target
      */
-    function setTarget(DataDefinitionTarget $target)
+    public function setTarget(DataDefinitionTarget $target)
     {
         $this->target = $target;
     }
@@ -51,7 +51,7 @@ class DataDefinition extends Object
     /**
      * @param Criteria $knownProperties
      */
-    function setKnownProperties($knownProperties)
+    public function setKnownProperties($knownProperties)
     {
         $this->knownProperties = $knownProperties;
     }

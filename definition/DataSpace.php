@@ -3,74 +3,68 @@
 namespace Wame\ChameleonComponents\Definition;
 
 use Nette\Application\UI\Control;
+use Nette\Object;
 
 /**
  * Components are splited into DataSpaces by DataSpacesBuilder. Each DataSpace
  * represents components with shared variables.
  */
-class DataSpace
+class DataSpace extends Object
 {
 
-    /** @var Control[] */
-    private $controls;
+    /** @var Control */
+    private $control;
 
-    /** @var DataDefinition[] */
-    private $dataDefinitions;
+    /** @var DataDefinition */
+    private $dataDefinition;
 
-    /** @var array */
+    /** @var mixed */
     private $data;
 
     /**
-     * @param DataDefinition[] $dataDefinition
-     * @param Control[] $controls
+     * @param Control $control
+     * @param DataDefinition $dataDefinition
      */
-    public function __construct($dataDefinition = null, $controls = null)
+    public function __construct(Control $control = null, DataDefinition $dataDefinition = null)
     {
-        if ($dataDefinition) {
-            $this->dataDefinition = $dataDefinition;
-        } else {
-            $this->dataDefinition = [];
-        }
-        if ($controls) {
-            $this->controls = $controls;
-        } else {
-            $this->controls = [];
-        }
+        $this->control = $control;
+        $this->dataDefinition = $dataDefinition;
     }
 
     /**
-     * @return Control[]
+     * @return Control
      */
-    public function getControls()
+    public function getControl()
     {
-        return $this->controls;
-    }
-    
-    public function getTopControls()
-    {
-        $topControls = [];
-        foreach($this->controls as $control) {
-            $parent = $control->getParent();
-            while($parent) {
-                if(in_array($parent, $this->controls)) {
-                    continue;
-                }
-                $control->getParent();
-            }
-        }
-        return $topControls;
+        return $this->control;
     }
 
     /**
-     * @return DataDefinition[]
+     * @param Control $control
      */
-    public function getDataDefinitions()
+    function setControl(Control $control)
     {
-        return $this->dataDefinitions;
+        $this->control = $control;
     }
 
     /**
-     * @return array
+     * @return DataDefinition
+     */
+    public function getDataDefinition()
+    {
+        return $this->dataDefinition;
+    }
+
+    /**
+     * @param DataDefinition $dataDefinition
+     */
+    function setDataDefinition(DataDefinition $dataDefinition)
+    {
+        $this->dataDefinition = $dataDefinition;
+    }
+
+    /**
+     * @return mixed
      */
     function getData()
     {
@@ -78,7 +72,7 @@ class DataSpace
     }
 
     /**
-     * @param array $data
+     * @param mixed $data
      */
     function setData($data)
     {

@@ -5,14 +5,14 @@ namespace Wame\ChameleonComponents;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 use Nette\Object;
-use Wame\ChameleonComponents\Definition\DataDefinition;
+use Wame\ChameleonComponents\Definition\ControlDataDefinition;
 use Wame\ChameleonComponents\Definition\DataSpace;
 
 class DataLoader extends Object
 {
 
-    /** @var DataSpacesBuilder */
-    private $dataSpacesBuilder;
+    /** @var IDataSpacesBuilderFactory */
+    private $dataSpacesBuilderFactory;
 
     /** @var IDataLoaderDriver */
     private $dataLoaderDriver;
@@ -20,23 +20,24 @@ class DataLoader extends Object
     /** @var Cache */
     private $cache;
 
-    public function __construct(DataSpacesBuilder $dataSpacesBuilder, IDataLoaderDriver $dataLoaderDriver, IStorage $cacheStorage)
+    public function __construct(IDataSpacesBuilderFactory $dataSpacesBuilderFactory, IDataLoaderDriver $dataLoaderDriver, IStorage $cacheStorage)
     {
-        $this->dataSpacesBuilder = $dataSpacesBuilder;
+        $this->dataSpacesBuilderFactory = $dataSpacesBuilderFactory;
         $this->dataLoaderDriver = $dataLoaderDriver;
         $this->cache = new Cache($cacheStorage, "DataLoader");
     }
 
     /**
      * 
-     * @param DataDefinition[] $dataDefinitions
+     * @param ControlDataDefinition[] $controlDataDefinitions
      * @return DataSpace[]
      */
-    public function processDataDefinitions($dataDefinitions)
+    public function processDataDefinitions($controlDataDefinitions)
     {
 //TODO      $this->cache
 
-        $dataSpaces = $this->dataSpacesBuilder->buildDataSpaces($dataDefinitions);
+        $dataSpaceBuilder = $this->dataSpacesBuilderFactory->create($controlDataDefinitions);
+        $dataSpaces = $dataSpaceBuilder->buildDataSpaces();
 
         $prepared = $this->dataLoaderDriver->prepare($dataSpaces);
 
