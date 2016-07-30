@@ -117,19 +117,19 @@ class DataSpacesBuilderTest extends TestCase
         }, InvalidArgumentException::class);
     }
 
-    public function testNoListDefinitions()
-    {
-        $control1 = new TestChameleonControlA(null, '1');
-        $control2 = new TestChameleonControlA($control1, '1');
-        $controlDataDefinition = new ControlDataDefinition($control1, new DataDefinition(new DataDefinitionTarget(A::class, false)));
-        $controlDataDefinition->setChildren([
-            new ControlDataDefinition($control2, new DataDefinition(new DataDefinitionTarget(A::class, false, true)))
-        ]);
-
-        Assert::exception(function() use($controlDataDefinition) {
-            $this->build($controlDataDefinition);
-        }, InvalidArgumentException::class);
-    }
+//    public function testNoListDefinitions()
+//    {
+//        $control1 = new TestChameleonControlA(null, '1');
+//        $control2 = new TestChameleonControlA($control1, '1');
+//        $controlDataDefinition = new ControlDataDefinition($control1, new DataDefinition(new DataDefinitionTarget(A::class, false)));
+//        $controlDataDefinition->setChildren([
+//            new ControlDataDefinition($control2, new DataDefinition(new DataDefinitionTarget(A::class, false, true)))
+//        ]);
+//
+//        Assert::exception(function() use($controlDataDefinition) {
+//            $this->build($controlDataDefinition);
+//        }, InvalidArgumentException::class);
+//    }
 
     /**
      * 

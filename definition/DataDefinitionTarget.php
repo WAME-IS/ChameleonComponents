@@ -3,18 +3,19 @@
 namespace Wame\ChameleonComponents\Definition;
 
 use Nette\Object;
+use Wame\Utils\Strings;
 
 class DataDefinitionTarget extends Object
 {
 
     /** @var string|string[] Class name */
-    public $type;
+    private $type;
 
     /** @var boolean */
-    public $list;
+    private $list;
     
     /** @var boolean */
-    public $multiple;
+    private $multiple;
 
     /**
      * Constructs new DataDefinitionTarget
@@ -93,5 +94,17 @@ class DataDefinitionTarget extends Object
     function setMultiple($multiple)
     {
         $this->multiple = $multiple;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getStatusName()
+    {
+        $name = $this->type;
+        if($this->isList()) {
+            $name = Strings::plural($name);
+        }
+        return $name;
     }
 }

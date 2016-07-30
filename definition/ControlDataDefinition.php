@@ -8,14 +8,13 @@ use Nette\Object;
 class ControlDataDefinition extends Object
 {
 
+    use TreeDefinitionTrait;
+    
     /** @var Control */
-    public $control;
+    private $control;
 
     /** @var DataDefinition[] */
     private $definitions;
-
-    /** @var ControlDataDefinition[] */
-    public $children = [];
 
     /**
      * @param Control $control
@@ -50,14 +49,6 @@ class ControlDataDefinition extends Object
     }
 
     /**
-     * @return DataDefinition[]
-     */
-    function getChildren()
-    {
-        return $this->children;
-    }
-
-    /**
      * @param DataDefinition[] $definitions
      */
     function setDataDefinitions($definitions)
@@ -73,11 +64,4 @@ class ControlDataDefinition extends Object
         return $this->definitions;
     }
 
-    /**
-     * @param DataDefinition[] $children
-     */
-    function setChildren($children)
-    {
-        $this->children = $children;
-    }
 }

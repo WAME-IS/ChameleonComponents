@@ -2,7 +2,7 @@
 
 namespace Wame\ChameleonComponents\Definition;
 
-class RecursiveControlDefinitionIterator extends \RecursiveArrayIterator implements \Countable
+class RecursiveTreeDefinitionIterator extends \RecursiveArrayIterator implements \Countable
 {
 
     /**

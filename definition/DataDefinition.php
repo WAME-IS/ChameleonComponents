@@ -9,10 +9,13 @@ class DataDefinition extends Object
 {
 
     /** @var DataDefinitionTarget */
-    public $target;
+    private $target;
 
     /** @var Criteria */
-    public $knownProperties;
+    private $knownProperties;
+
+    /** @var array [string => mixed] */
+    private $hints;
 
     /**
      * @param DataDefinitionTarget $target
@@ -22,6 +25,7 @@ class DataDefinition extends Object
     {
         $this->target = $target;
         $this->knownProperties = $knownProperties;
+        $this->hints = [];
     }
 
     /**
@@ -41,6 +45,29 @@ class DataDefinition extends Object
     }
 
     /**
+     * @return array [string => mixed]
+     */
+    public function getHints()
+    {
+        return $this->hints;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function getHint($name, $checkType = null)
+    {
+        if (isset($this->hints[$name])) {
+            $hint = $this->hints[$name];
+            if($checkType && !is_a($hint, $checkType)) {
+                throw new \Nette\InvalidArgumentException("Invalid hint type! It has to be $checkType");
+            }
+            return $hint;
+        }
+    }
+
+    /**
      * @param DataDefinitionTarget $target
      */
     public function setTarget(DataDefinitionTarget $target)
@@ -54,5 +81,14 @@ class DataDefinition extends Object
     public function setKnownProperties($knownProperties)
     {
         $this->knownProperties = $knownProperties;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setHint($name, $value)
+    {
+        $this->hints[$name] = $value;
     }
 }

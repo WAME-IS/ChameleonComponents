@@ -11,6 +11,7 @@ use Nette\Object;
  */
 class DataSpace extends Object
 {
+    use TreeDefinitionTrait;
 
     /** @var Control */
     private $control;

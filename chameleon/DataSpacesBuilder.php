@@ -1,16 +1,13 @@
 <?php
-
-namespace Wame\ChameleonComponents;
-
 use Doctrine\Common\Collections\Criteria;
 use Nette\Application\UI\Control;
-use Nette\InvalidArgumentException;
-use RecursiveIteratorIterator;
 use Wame\ChameleonComponents\Definition\ControlDataDefinition;
 use Wame\ChameleonComponents\Definition\DataDefinition;
 use Wame\ChameleonComponents\Definition\DataDefinitionTarget;
 use Wame\ChameleonComponents\Definition\DataSpace;
-use Wame\ChameleonComponents\Definition\RecursiveControlDefinitionIterator;
+use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
+
+namespace Wame\ChameleonComponents;
 
 class DataSpacesBuilder
 {
@@ -39,15 +36,15 @@ class DataSpacesBuilder
 
     public function buildDataSpaces()
     {
-        $iterator = new RecursiveIteratorIterator(new RecursiveControlDefinitionIterator($this->controlDataDefinitions), \RecursiveIteratorIterator::SELF_FIRST);
+        $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($this->controlDataDefinitions), RecursiveIteratorIterator::SELF_FIRST);
 
         $controlDataDefinition = null;
         foreach ($iterator as $controlDataDefinition) {
             $this->processControlDefinition($controlDataDefinition);
         }
 
-        $this->validateDataSpaces();
-        
+//        $this->validateDataSpaces();
+
         return $this->dataSpaces;
     }
 
@@ -68,12 +65,9 @@ class DataSpacesBuilder
      */
     private function processDefinition($dataDefinition, $control)
     {
-        var_dump("Processing definition..");
-
         $dsgen = $this->parentDataSpaceGenerator($control);
 
         foreach ($dsgen as $dataSpace) {
-            var_dump("dgen");
             if ($this->canBeSameTarget($dataSpace->getDataDefinition()->getTarget(), $dataDefinition->getTarget())) {
                 $dataSpace->setDataDefinition($this->mergeDataDefinitions($dataSpace->getDataDefinition(), $dataDefinition));
                 return;
@@ -130,15 +124,15 @@ class DataSpacesBuilder
             throw new InvalidArgumentException("At least two DataDefinitions have to be specified.");
         }
 
-        $target = new Definition\DataDefinitionTarget("*");
+        $target = new DataDefinitionTarget("*");
         $knownProperties = null;
 
         foreach ($dataDefinitions as $dataDefinition) {
             $target = $this->intersectTargets(false, $target, $dataDefinition->getTarget());
             $knownProperties = $this->mergeCriteria($knownProperties, $dataDefinition->getKnownProperties());
         }
-        
-        if(!is_string($target->getType()) || $target->getType() == self::ANY_TYPE_CHAR) {
+
+        if (!is_string($target->getType()) || $target->getType() == self::ANY_TYPE_CHAR) {
             throw new InvalidArgumentException("Unable to find single target for DataSpace.");
         }
 
@@ -301,23 +295,25 @@ class DataSpacesBuilder
 
         return $newCriteria;
     }
-    
-    private function validateDataSpaces()
-    {
-        foreach ($this->dataSpaces as $dataSpace) {
-            $this->validateDataSpace($dataSpace);
-        }
-    }
-    
+//    private function validateDataSpaces()
+//    {
+//        foreach ($this->dataSpaces as $dataSpace) {
+//            $this->validateDataSpace($dataSpace);
+//        }
+//    }
+
     /**
      * 
      * @param DataSpace $dataSpace
      */
-    private function validateDataSpace($dataSpace)
-    {
-        $target = $dataSpace->getDataDefinition()->getTarget();
-        if($target->isMultiple()) {
-//            $dataSpace->getParent()
-        }
-    }
+//    private function validateDataSpace($dataSpace)
+//    {
+//        $target = $dataSpace->getDataDefinition()->getTarget();
+//        if ($target->isMultiple()) {
+//            $parentDataSpace = $dataSpace->getParent();
+//            if (!$parentDataSpace || !$parentDataSpace->getDataDefinition()->getTarget()->isList()) {
+//                throw new InvalidArgumentException("Controls used for displaying list has to have some underlaying list!");
+//            }
+//        }
+//    }
 }

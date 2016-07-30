@@ -4,6 +4,7 @@ namespace Wame\ChameleonComponents\Drivers\Repository;
 
 use Nette\InvalidArgumentException;
 use Wame\ChameleonComponents\Definition\DataDefinition;
+use Wame\ChameleonComponents\Definition\DataSpace;
 use Wame\ChameleonComponents\IDataLoaderDriver;
 use Wame\Core\Registers\RepositoryRegister;
 
@@ -19,17 +20,7 @@ class RepositoryDataLoaderDriver implements IDataLoaderDriver
     
     public function execute($dataSpaces, $prepared)
     {
-        foreach ($dataSpaces as $dataSpace) {
-            
-            $data = [];
-            
-            foreach ($dataSpace->getDataDefinitions() as $dataDefinition) {
-                $result = $this->executeDefinition($dataDefinition);
-                $data[$dataDefinition->getTarget()->getType()] = $result;
-            }
-            
-            $dataSpace->setData($data);
-        }
+        
     }
     
     private function executeDefinition(DataDefinition $dataDefinition)
@@ -48,8 +39,37 @@ class RepositoryDataLoaderDriver implements IDataLoaderDriver
         }
     }
 
-    public function prepare($dataSpaces)
+    public function prepareCallbacks($dataSpaces)
     {
+        foreach ($dataSpaces as $dataSpace) {
+            $this->prepareDataSpace($dataSpace);
+            
+        }
+    }
+    
+    /**
+     * @param DataSpace $dataSpace
+     */
+    private function prepareDataSpace($dataSpace)
+    {
+        $callback = $this->prepareCallback($dataSpace->getDataDefinition());
         
+        
+        $data = [];
+            
+            foreach ( as $dataDefinition) {
+                $result = $this->executeDefinition($dataDefinition);
+                $data[$dataDefinition->getTarget()->getType()] = $result;
+            }
+            
+            $dataSpace->setData($data);
+    }
+    
+    /**
+     * @param DataDefinition $dataDefinition
+     */
+    private function prepareCallback($dataDefinition)
+    {
+        $dataDefinition->getTarget()->getType()
     }
 }

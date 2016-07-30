@@ -4,9 +4,13 @@ namespace Wame\ChameleonComponents;
 
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
+use Nette\InvalidArgumentException;
 use Nette\Object;
+use RecursiveIteratorIterator;
 use Wame\ChameleonComponents\Definition\ControlDataDefinition;
 use Wame\ChameleonComponents\Definition\DataSpace;
+use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
+use Wame\ChameleonComponents\Registers\DataLoaderDriverRegister;
 
 class DataLoader extends Object
 {
@@ -14,16 +18,16 @@ class DataLoader extends Object
     /** @var IDataSpacesBuilderFactory */
     private $dataSpacesBuilderFactory;
 
-    /** @var IDataLoaderDriver */
-    private $dataLoaderDriver;
+    /** @var DataLoaderDriverRegister */
+    private $dataLoaderDriverRegister;
 
     /** @var Cache */
     private $cache;
 
-    public function __construct(IDataSpacesBuilderFactory $dataSpacesBuilderFactory, IDataLoaderDriver $dataLoaderDriver, IStorage $cacheStorage)
+    public function __construct(IDataSpacesBuilderFactory $dataSpacesBuilderFactory, DataLoaderDriverRegister $dataLoaderDriverRegister, IStorage $cacheStorage)
     {
         $this->dataSpacesBuilderFactory = $dataSpacesBuilderFactory;
-        $this->dataLoaderDriver = $dataLoaderDriver;
+        $this->dataLoaderDriverRegister = $dataLoaderDriverRegister;
         $this->cache = new Cache($cacheStorage, "DataLoader");
     }
 
@@ -39,12 +43,51 @@ class DataLoader extends Object
         $dataSpaceBuilder = $this->dataSpacesBuilderFactory->create($controlDataDefinitions);
         $dataSpaces = $dataSpaceBuilder->buildDataSpaces();
 
-        $prepared = $this->dataLoaderDriver->prepare($dataSpaces);
+        $prepared = $this->prepareDataSpaces($dataSpaces);
 
 //TODO      $this->cache
 
         $this->dataLoaderDriver->execute($dataSpaces, $prepared);
 
         return $dataSpaces;
+    }
+
+    /**
+     * @param DataSpace[] $dataSpaces
+     */
+    private function prepareDataSpaces($dataSpaces)
+    {
+        $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($dataSpaces), RecursiveIteratorIterator::SELF_FIRST);
+
+        foreach ($iterator as $dataSpace) {
+            $driver = $this->selectDataDriver($dataSpace);
+
+            $name = $dataSpace->getDataDefinition()->getTarget()->getStatusName();
+            $callback = $driver->prepareCallbacks($dataSpace);
+
+            $dataSpace->getControl()->getState()->set($name, $callback);
+        }
+    }
+
+    /**
+     * @param DataSpace $dataSpace
+     * @return IDataLoaderDriver
+     */
+    private function selectDataDriver($dataSpace)
+    {
+        $driver = $dataSpace->getDataDefinition()->getHint('dataLoaderDriver', IDataLoaderDriver::class);
+        if ($driver) {
+            return $driver;
+        }
+
+        foreach ($this->dataLoaderDriverRegister as $driver) {
+            if ($driver->canPrepare($dataSpace)) {
+                return $driver;
+            }
+        }
+
+        $e = new InvalidArgumentException("Cannot find driver that can be used to load this DataSpace");
+        $e->dataSpace = $dataSpace;
+        throw $e;
     }
 }
