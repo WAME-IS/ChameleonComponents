@@ -2,6 +2,9 @@
 
 namespace Wame\ChameleonComponents\IO;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 class DataLoaderPresenterIO extends \Nette\Object
 {
     

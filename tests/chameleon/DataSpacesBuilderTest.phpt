@@ -3,11 +3,11 @@
 namespace Wame\ChameleonComponents\Tests\Chameleon;
 
 require_once '../bootstrap.php';
+
 use A;
 use B;
 use Doctrine\Common\Collections\Criteria;
 use Nette\InvalidArgumentException;
-use TestChameleonControlA;
 use Tester\Assert;
 use Tester\TestCase;
 use Wame\ChameleonComponents\DataSpacesBuilder;
@@ -16,6 +16,9 @@ use Wame\ChameleonComponents\Definition\DataDefinition;
 use Wame\ChameleonComponents\Definition\DataDefinitionTarget;
 use Wame\ChameleonComponents\Definition\DataSpace;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 class DataSpacesBuilderTest extends TestCase
 {
 
@@ -116,7 +119,6 @@ class DataSpacesBuilderTest extends TestCase
             $this->build($controlDataDefinitions);
         }, InvalidArgumentException::class);
     }
-
 //    public function testNoListDefinitions()
 //    {
 //        $control1 = new TestChameleonControlA(null, '1');

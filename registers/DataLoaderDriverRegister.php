@@ -3,9 +3,12 @@
 namespace Wame\ChameleonComponents\Registers;
 
 use Wame\ChameleonComponents\IDataLoaderDriver;
-use Wame\Core\Registers\BaseRegister;
+use Wame\Core\Registers\PriorityRegister;
 
-class DataLoaderDriverRegister extends BaseRegister
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
+class DataLoaderDriverRegister extends PriorityRegister
 {
 
     public function __construct()

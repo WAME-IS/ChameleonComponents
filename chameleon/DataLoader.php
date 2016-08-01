@@ -12,6 +12,12 @@ use Wame\ChameleonComponents\Definition\DataSpace;
 use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
 use Wame\ChameleonComponents\Registers\DataLoaderDriverRegister;
 
+/**
+ * Heart of ChameleonComponents. (Powerful tool for making components that can 
+ * adapt to its surroundings like chameleon)
+ *
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 class DataLoader extends Object
 {
 

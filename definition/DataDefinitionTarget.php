@@ -5,6 +5,9 @@ namespace Wame\ChameleonComponents\Definition;
 use Nette\Object;
 use Wame\Utils\Strings;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 class DataDefinitionTarget extends Object
 {
 
@@ -13,7 +16,7 @@ class DataDefinitionTarget extends Object
 
     /** @var boolean */
     private $list;
-    
+
     /** @var boolean */
     private $multiple;
 
@@ -46,7 +49,7 @@ class DataDefinitionTarget extends Object
     {
         return $this->list;
     }
-    
+
     /**
      * @return boolean
      */
@@ -55,7 +58,6 @@ class DataDefinitionTarget extends Object
         return $this->multiple;
     }
 
-    
     /**
      * @return boolean
      */
@@ -63,7 +65,7 @@ class DataDefinitionTarget extends Object
     {
         return $this->list;
     }
-    
+
     /**
      * @return boolean
      */
@@ -79,7 +81,7 @@ class DataDefinitionTarget extends Object
     {
         $this->type = $type;
     }
-    
+
     /**
      * @param boolean $list
      */
@@ -95,14 +97,14 @@ class DataDefinitionTarget extends Object
     {
         $this->multiple = $multiple;
     }
-    
+
     /**
      * @return string
      */
     public function getStatusName()
     {
         $name = $this->type;
-        if($this->isList()) {
+        if ($this->isList()) {
             $name = Strings::plural($name);
         }
         return $name;

@@ -6,8 +6,8 @@ use Wame\ChameleonComponents\Definition\ControlDataDefinition;
 
 /**
  * Controls which want to use automatic DataLoader should implement this interface
- * 
- * @author Ienze
+ *
+ * @author Dominik Gmiterko <ienze@ienze.me>
  */
 interface DataLoaderControl
 {

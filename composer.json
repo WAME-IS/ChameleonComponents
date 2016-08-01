@@ -1,7 +1,7 @@
 {
     "name": "wame/ChameleonComponents",
     "version": "0.0.1",
-    "description": "Powerful tool for making components that can adapt its to surroundings like chameleon.",
+    "description": "Powerful tool for making components that can adapt to its surroundings like chameleon.",
     "homepage": "http://wame.sk/cms-wame-admin",
     "authors": [
         {

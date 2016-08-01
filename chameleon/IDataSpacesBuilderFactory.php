@@ -2,6 +2,9 @@
 
 namespace Wame\ChameleonComponents;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 interface IDataSpacesBuilderFactory
 {
 

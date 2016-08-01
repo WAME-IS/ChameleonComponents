@@ -2,6 +2,9 @@
 
 namespace Wame\ChameleonComponents\Definition;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 trait TreeDefinitionTrait
 {
 

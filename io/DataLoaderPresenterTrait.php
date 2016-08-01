@@ -2,6 +2,9 @@
 
 namespace Wame\ChameleonComponents\IO;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 trait DataLoaderPresenterTrait
 {
     /** @var DataLoaderPresenterIO */

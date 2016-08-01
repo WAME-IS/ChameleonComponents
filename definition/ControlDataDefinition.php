@@ -5,11 +5,14 @@ namespace Wame\ChameleonComponents\Definition;
 use Nette\Application\UI\Control;
 use Nette\Object;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 class ControlDataDefinition extends Object
 {
 
     use TreeDefinitionTrait;
-    
+
     /** @var Control */
     private $control;
 
@@ -63,5 +66,4 @@ class ControlDataDefinition extends Object
     {
         return $this->definitions;
     }
-
 }

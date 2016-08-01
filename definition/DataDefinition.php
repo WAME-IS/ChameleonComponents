@@ -3,8 +3,12 @@
 namespace Wame\ChameleonComponents\Definition;
 
 use Doctrine\Common\Collections\Criteria;
+use Nette\InvalidArgumentException;
 use Nette\Object;
 
+/**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
 class DataDefinition extends Object
 {
 
@@ -60,8 +64,8 @@ class DataDefinition extends Object
     {
         if (isset($this->hints[$name])) {
             $hint = $this->hints[$name];
-            if($checkType && !is_a($hint, $checkType)) {
-                throw new \Nette\InvalidArgumentException("Invalid hint type! It has to be $checkType");
+            if ($checkType && !is_a($hint, $checkType)) {
+                throw new InvalidArgumentException("Invalid hint type! It has to be $checkType");
             }
             return $hint;
         }

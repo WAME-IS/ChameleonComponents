@@ -7,10 +7,13 @@ use Nette\Object;
 
 /**
  * Components are splited into DataSpaces by DataSpacesBuilder. Each DataSpace
- * represents components with shared variables.
+ * represents components with shared properties.
+ *
+ * @author Dominik Gmiterko <ienze@ienze.me>
  */
 class DataSpace extends Object
 {
+
     use TreeDefinitionTrait;
 
     /** @var Control */

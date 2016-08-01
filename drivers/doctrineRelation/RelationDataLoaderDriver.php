@@ -1,28 +1,35 @@
 <?php
-namespace Wame\ChameleonComponents;
+
+namespace Wame\ChameleonComponents\Drivers\DoctrineRelation;
 
 use Wame\ChameleonComponents\Definition\DataSpace;
+use Wame\ChameleonComponents\IDataLoaderDriver;
 
 /**
- * Interface for driver that can be used in DataLoader
- *
  * @author Dominik Gmiterko <ienze@ienze.me>
  */
-interface IDataLoaderDriver
+class RelationDataLoaderDriver implements IDataLoaderDriver
 {
+
     /**
      * Prepare callback for loading data
      * 
      * @param DataSpace $dataSpace
      * @return callable
      */
-    public function prepareCallback($dataSpace);
-    
+    public function prepareCallback($dataSpace)
+    {
+        
+    }
+
     /**
      * Returns whenever this driver can prepare callback to load data
      * 
      * @param DataSpace $dataSpace
      * @return boolean
      */
-    public function canPrepare($dataSpace);
+    public function canPrepare($dataSpace)
+    {
+        
+    }
 }
