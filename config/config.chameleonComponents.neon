@@ -1,0 +1,12 @@
+services:
+    - Wame\ChameleonComponents\DataLoader
+
+    # Factories
+    - Wame\ChameleonComponents\IDataSpacesBuilderFactory
+
+    # Presenter
+    - Wame\ChameleonComponents\IO\DataLoaderPresenterIO
+
+    # Registers
+    DataLoaderDriverRegister:
+        class: Wame\ChameleonComponents\Registers\DataLoaderDriverRegister
