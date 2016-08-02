@@ -2,12 +2,17 @@
 
 namespace Wame\ChameleonComponents;
 
+use Wame\ChameleonComponents\Definition\ControlDataDefinition;
+
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
  */
 interface IDataSpacesBuilderFactory
 {
 
-    /** @return Wame\ChameleonComponents\DataSpacesBuilder */
-    public function create($dataDefinitions);
+    /**
+     * @return DataSpacesBuilder
+     * @param ControlDataDefinition[] $controlDataDefinitions
+     */
+    public function create($controlDataDefinitions);
 }
