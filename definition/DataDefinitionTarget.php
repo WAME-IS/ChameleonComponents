@@ -11,30 +11,26 @@ use Wame\Utils\Strings;
 class DataDefinitionTarget extends Object
 {
 
-    /** @var string|string[] Class name */
+    /** @var string|string[] */
     private $type;
 
     /** @var boolean */
     private $list;
 
-    /** @var boolean */
-    private $multiple;
-
     /**
      * Constructs new DataDefinitionTarget
      * 
      * @param string|string[] $type
-     * @param boolean $multiple
      */
-    public function __construct($type, $list = null, $multiple = null)
+    public function __construct($type, $list = null)
     {
         $this->type = $type;
         $this->list = $list;
-        $this->multiple = $multiple;
     }
 
     /**
      * Returns known type or array of possible known types
+     * 
      * @return string|string[] Class name
      */
     function getType()
@@ -53,25 +49,9 @@ class DataDefinitionTarget extends Object
     /**
      * @return boolean
      */
-    function isMultiple()
-    {
-        return $this->multiple;
-    }
-
-    /**
-     * @return boolean
-     */
     function getList()
     {
         return $this->list;
-    }
-
-    /**
-     * @return boolean
-     */
-    function getMultiple()
-    {
-        return $this->multiple;
     }
 
     /**
@@ -88,14 +68,6 @@ class DataDefinitionTarget extends Object
     function setList($list)
     {
         $this->list = $list;
-    }
-
-    /**
-     * @param boolean $multiple
-     */
-    function setMultiple($multiple)
-    {
-        $this->multiple = $multiple;
     }
 
     /**
