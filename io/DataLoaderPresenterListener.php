@@ -2,40 +2,43 @@
 
 namespace Wame\ChameleonComponents\IO;
 
+use App\Core\Presenters\BasePresenter;
+use Nette\Application\Application;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
+use Nette\DI\Container;
 use Nette\Object;
 use Wame\ChameleonComponents\DataLoader;
 
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
  */
-class DataLoaderPresenterIO extends Object
+class DataLoaderPresenterListener extends Object
 {
 
-    /** @var DataLoader */
-    private $dataLoader;
+    /** @var Container */
+    private $container;
 
-    public function __construct(DataLoader $dataLoader)
+    public function __construct(Application $application, Container $container)
     {
-        $this->dataLoader = $dataLoader;
+        $this->container = $container;
+        $application->onPresenter[] = function($application, $presenter) {
+            if ($presenter instanceof BasePresenter) {
+                $presenter->onBeforeRender[] = function() use ($presenter) {
+                    $this->load($presenter);
+                };
+            }
+        };
     }
 
     public function load(Presenter $presenter)
     {
         $dataDefinitions = $this->readDataDefinitions($presenter);
 
-        $dataSpaces = $this->dataLoader->processDataDefinitions($dataDefinitions);
-
-        foreach ($dataSpaces as $dataSpace) {
-            $this->bindResult($dataSpace->getTopControls(), $dataSpace->getData());
-        }
-    }
-
-    private function bindResult($controls, $data)
-    {
-        foreach ($controls as $control) {
-            
+        if ($dataDefinitions) {
+            //Optimize loading of DataLoader, load it only if some definitions are found
+            $dataLoader = $this->container->getByType(DataLoader::class);
+            $dataLoader->processDataDefinitions($dataDefinitions);
         }
     }
 
@@ -59,7 +62,7 @@ class DataLoaderPresenterIO extends Object
         }
 
         if ($dataDefinition) {
-            $dataDefinition->setChilds($childDataDefinitions);
+            $dataDefinition->setChildren($childDataDefinitions);
             return [$dataDefinition];
         } else {
             return $childDataDefinitions;

@@ -24,7 +24,7 @@ class DataSpacesBuilder
     private $controlDataDefinitions;
 
     /** @var DataSpace[] */
-    private $dataSpaces;
+    private $dataSpaces = [];
 
     /**
      * 

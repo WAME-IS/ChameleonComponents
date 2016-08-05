@@ -5,7 +5,7 @@ services:
     - Wame\ChameleonComponents\IDataSpacesBuilderFactory
 
     # Presenter
-    - Wame\ChameleonComponents\IO\DataLoaderPresenterIO
+    - {class: Wame\ChameleonComponents\IO\DataLoaderPresenterListener, tags: [run]}
 
     # Registers
     DataLoaderDriverRegister:

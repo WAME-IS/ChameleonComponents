@@ -46,14 +46,16 @@ class DataLoader extends Object
     {
 //TODO      $this->cache
 
+        \Tracy\Debugger::barDump($controlDataDefinitions);
+        
         $dataSpaceBuilder = $this->dataSpacesBuilderFactory->create($controlDataDefinitions);
         $dataSpaces = $dataSpaceBuilder->buildDataSpaces();
 
-        $prepared = $this->prepareDataSpaces($dataSpaces);
+        \Tracy\Debugger::barDump($dataSpaces);
+        
+        $this->prepareDataSpaces($dataSpaces);
 
 //TODO      $this->cache
-
-        $this->dataLoaderDriver->execute($dataSpaces, $prepared);
 
         return $dataSpaces;
     }
@@ -69,9 +71,9 @@ class DataLoader extends Object
             $driver = $this->selectDataDriver($dataSpace);
 
             $name = $dataSpace->getDataDefinition()->getTarget()->getStatusName();
-            $callback = $driver->prepareCallbacks($dataSpace);
+            $callback = $driver->prepareCallback($dataSpace);
 
-            $dataSpace->getControl()->getState()->set($name, $callback);
+            $dataSpace->getControl()->getStatus()->set($name, $callback);
         }
     }
 
