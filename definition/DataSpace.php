@@ -22,9 +22,6 @@ class DataSpace extends Object
     /** @var DataDefinition */
     private $dataDefinition;
 
-    /** @var mixed */
-    private $data;
-
     /**
      * @param Control $control
      * @param DataDefinition $dataDefinition
@@ -65,21 +62,5 @@ class DataSpace extends Object
     function setDataDefinition(DataDefinition $dataDefinition)
     {
         $this->dataDefinition = $dataDefinition;
-    }
-
-    /**
-     * @return mixed
-     */
-    function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param mixed $data
-     */
-    function setData($data)
-    {
-        $this->data = $data;
     }
 }
