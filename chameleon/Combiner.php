@@ -21,7 +21,7 @@ class Combiner
             throw new InvalidArgumentException("At least two DataDefinitions have to be specified.");
         }
 
-        $target = new DataDefinitionTarget("*");
+        $target = new DataDefinitionTarget(DataSpacesBuilder::ANY_TYPE_CHAR);
         $knownProperties = null;
 
         foreach ($dataDefinitions as $dataDefinition) {
@@ -29,7 +29,7 @@ class Combiner
             $knownProperties = $this->mergeCriteria($knownProperties, $dataDefinition->getKnownProperties());
         }
 
-        if (!is_string($target->getType()) || $target->getType() == self::ANY_TYPE_CHAR) {
+        if (!is_string($target->getType()) || $target->getType() == DataSpacesBuilder::ANY_TYPE_CHAR) {
             throw new InvalidArgumentException("Unable to find single target for DataSpace.");
         }
 
@@ -52,7 +52,6 @@ class Combiner
         $target = array_shift($targets);
         $type = $target->getType();
         $list = $target->isList();
-        $multiple = $target->isMultiple();
 
         if (!is_string($type) && !is_array($type)) {
             if ($dry) {
@@ -69,9 +68,9 @@ class Combiner
              */
             $otype = $target->getType();
             if (is_string($otype)) {
-                if ($otype != self::ANY_TYPE_CHAR) {
+                if ($otype != DataSpacesBuilder::ANY_TYPE_CHAR) {
                     if (is_string($type)) {
-                        if ($type != self::ANY_TYPE_CHAR) {
+                        if ($type != DataSpacesBuilder::ANY_TYPE_CHAR) {
                             var_dump($type, $otype);
                             if ($type != $otype) {
                                 if ($dry) {
@@ -98,7 +97,7 @@ class Combiner
                 }
             } elseif (is_array($otype)) {
                 if (is_string($type)) {
-                    if ($type == self::ANY_TYPE_CHAR) {
+                    if ($type == DataSpacesBuilder::ANY_TYPE_CHAR) {
                         $type = $otype;
                     } else {
                         if (!in_array($type, $otype)) {
@@ -138,27 +137,12 @@ class Combiner
                     }
                 }
             }
-
-            /*
-             * Multiple
-             */
-            if ($multiple == null) {
-                $multiple = $target->isMultiple();
-            } else {
-                if ($multiple != $target->isMultiple()) {
-                    if ($dry) {
-                        return false;
-                    } else {
-                        throw new InvalidArgumentException("Cannot use two different values for property 'multiple' $multiple and {$target->isMultiple()}");
-                    }
-                }
-            }
         }
 
         if ($dry) {
             return true;
         } else {
-            return new DataDefinitionTarget($type, $list, $multiple);
+            return new DataDefinitionTarget($type, $list);
         }
     }
     
