@@ -17,15 +17,21 @@ class DataDefinitionTarget extends Object
     /** @var boolean */
     private $list;
 
+    /** @var string */
+    private $queryType;
+
     /**
      * Constructs new DataDefinitionTarget
      * 
      * @param string|string[] $type
+     * @param boolean $list
+     * @param string $queryType
      */
-    public function __construct($type, $list = null)
+    public function __construct($type, $list = null, $queryType = null)
     {
         $this->type = $type;
         $this->list = $list;
+        $this->queryType = $queryType;
     }
 
     /**
@@ -33,7 +39,7 @@ class DataDefinitionTarget extends Object
      * 
      * @return string|string[] Class name
      */
-    function getType()
+    public function getType()
     {
         return $this->type;
     }
@@ -41,7 +47,7 @@ class DataDefinitionTarget extends Object
     /**
      * @return boolean
      */
-    function isList()
+    public function isList()
     {
         return $this->list;
     }
@@ -49,25 +55,44 @@ class DataDefinitionTarget extends Object
     /**
      * @return boolean
      */
-    function getList()
+    public function getList()
     {
         return $this->list;
     }
 
     /**
+     * @return string
+     */
+    function getQueryType()
+    {
+        return $this->queryType;
+    }
+
+    /**
      * @param string $type Class name
      */
-    function setType($type)
+    public function setType($type)
     {
         $this->type = $type;
+        return $this;
     }
 
     /**
      * @param boolean $list
      */
-    function setList($list)
+    public function setList($list)
     {
         $this->list = $list;
+        return $this;
+    }
+
+    /**
+     * @param string $queryType
+     */
+    public function setQueryType($queryType)
+    {
+        $this->queryType = $queryType;
+        return $this;
     }
 
     /**

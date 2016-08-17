@@ -46,6 +46,7 @@ class DataSpace extends Object
     function setControl(Control $control)
     {
         $this->control = $control;
+        return $this;
     }
 
     /**
@@ -62,5 +63,6 @@ class DataSpace extends Object
     function setDataDefinition(DataDefinition $dataDefinition)
     {
         $this->dataDefinition = $dataDefinition;
+        return $this;
     }
 }

@@ -77,6 +77,7 @@ class DataDefinition extends Object
     public function setTarget(DataDefinitionTarget $target)
     {
         $this->target = $target;
+        return $this;
     }
 
     /**
@@ -85,6 +86,7 @@ class DataDefinition extends Object
     public function setKnownProperties($knownProperties)
     {
         $this->knownProperties = $knownProperties;
+        return $this;
     }
 
     /**
@@ -94,5 +96,6 @@ class DataDefinition extends Object
     public function setHint($name, $value)
     {
         $this->hints[$name] = $value;
+        return $this;
     }
 }

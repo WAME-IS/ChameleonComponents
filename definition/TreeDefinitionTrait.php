@@ -2,6 +2,8 @@
 
 namespace Wame\ChameleonComponents\Definition;
 
+use Nette\InvalidArgumentException;
+
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
  */
@@ -35,14 +37,14 @@ trait TreeDefinitionTrait
 
     /**
      * @param static $child
-     * @throws \Nette\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addChild($child)
     {
         if (!is_a($child, get_class($this))) {
-            throw new \Nette\InvalidArgumentException("Only same types of objects can be added as children.");
+            throw new InvalidArgumentException("Only same types of objects can be added as children.");
         }
-        if (in_array($child, $this->children)) {
+        if (!in_array($child, $this->children)) {
             $this->children[] = $child;
             $child->setParent($this);
         }
@@ -50,12 +52,12 @@ trait TreeDefinitionTrait
 
     /**
      * @param static $parent
-     * @throws \Nette\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setParent($parent)
     {
         if (!is_a($parent, get_class($this))) {
-            throw new \Nette\InvalidArgumentException("Only same type of object can be set as parent.");
+            throw new InvalidArgumentException("Only same type of object can be set as parent.");
         }
         if ($this->parent != $parent) {
             $this->parent = $parent;

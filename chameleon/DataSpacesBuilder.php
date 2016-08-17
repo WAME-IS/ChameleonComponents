@@ -44,9 +44,10 @@ class DataSpacesBuilder
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($this->controlDataDefinitions), RecursiveIteratorIterator::SELF_FIRST);
 
+        /* @var $controlDataDefinition \Wame\ChameleonComponents\Definition\ControlDataDefinition */
         $controlDataDefinition = null;
         foreach ($iterator as $controlDataDefinition) {
-            $this->processControlDefinition($controlDataDefinition);
+            $this->processControlDefinition($controlDataDefinition, $iterator->getDepth());
         }
 
 //        $this->validateDataSpaces();
@@ -57,7 +58,7 @@ class DataSpacesBuilder
     /**
      * @param ControlDataDefinition $controlDataDefinition
      */
-    private function processControlDefinition($controlDataDefinition)
+    private function processControlDefinition($controlDataDefinition, $depth)
     {
         foreach ($controlDataDefinition->getDataDefinitions() as $dataDefinition) {
             $this->processDefinition($dataDefinition, $controlDataDefinition->getControl());
@@ -90,6 +91,7 @@ class DataSpacesBuilder
      */
     private function parentDataSpaceGenerator($control)
     {
+
         $gen = function() use ($control) {
             //TOOD improve performance?
             $parent = $control;

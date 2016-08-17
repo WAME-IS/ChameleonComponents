@@ -17,6 +17,7 @@ class Combiner
      */
     public static function combineDataDefinitions(...$dataDefinitions)
     {
+        
         if (count($dataDefinitions) < 2) {
             throw new InvalidArgumentException("At least two DataDefinitions have to be specified.");
         }
@@ -25,8 +26,8 @@ class Combiner
         $knownProperties = null;
 
         foreach ($dataDefinitions as $dataDefinition) {
-            $target = $this->intersectTargets(false, $target, $dataDefinition->getTarget());
-            $knownProperties = $this->mergeCriteria($knownProperties, $dataDefinition->getKnownProperties());
+            $target = self::combineTargets(false, $target, $dataDefinition->getTarget());
+            $knownProperties = self::combineCriteria($knownProperties, $dataDefinition->getKnownProperties());
         }
 
         if (!is_string($target->getType()) || $target->getType() == DataSpacesBuilder::ANY_TYPE_CHAR) {
@@ -35,7 +36,7 @@ class Combiner
 
         return new DataDefinition($target, $knownProperties);
     }
-    
+
     /**
      * Function combines DataDefinitionTargets.
      * When $dry parameter is set to TRUE no exceptions will be thrown but succesfulnes result is returned insted (TRUE/FALSE).
@@ -52,6 +53,7 @@ class Combiner
         $target = array_shift($targets);
         $type = $target->getType();
         $list = $target->isList();
+        $queryType = null;
 
         if (!is_string($type) && !is_array($type)) {
             if ($dry) {
@@ -71,12 +73,10 @@ class Combiner
                 if ($otype != DataSpacesBuilder::ANY_TYPE_CHAR) {
                     if (is_string($type)) {
                         if ($type != DataSpacesBuilder::ANY_TYPE_CHAR) {
-                            var_dump($type, $otype);
                             if ($type != $otype) {
                                 if ($dry) {
                                     return false;
                                 } else {
-                                    var_dump("throw");
                                     throw new InvalidArgumentException("Cannot use two different specificc types $type and $otype");
                                 }
                             }
@@ -137,6 +137,21 @@ class Combiner
                     }
                 }
             }
+            
+            /*
+             * QueryType
+             */
+            if ($queryType == null) {
+                $queryType = $target->getQueryType();
+            } else {
+                if ($queryType != $target->getQueryType()) {
+                    if ($dry) {
+                        return false;
+                    } else {
+                        throw new InvalidArgumentException("Cannot use two different values for property 'queryType' $queryType and {$target->getQueryType()}");
+                    }
+                }
+            }
         }
 
         if ($dry) {
@@ -145,16 +160,19 @@ class Combiner
             return new DataDefinitionTarget($type, $list);
         }
     }
-    
+
     /**
      * @param Criteria[] $criteria
      */
     public static function combineCriteria(...$criteria)
     {
+
         if (count($criteria) < 2) {
             throw new InvalidArgumentException("At least two criteria objects have to be specified.");
         }
 
+        /* @var $c \Doctrine\Common\Collections\Criteria */
+        /* @var $newCriteria \Doctrine\Common\Collections\Criteria */
         $newCriteria = null;
 
         foreach ($criteria as $c) {
@@ -165,15 +183,34 @@ class Combiner
                 $newCriteria = $c;
                 continue;
             }
+
+            //where
             if ($c->getWhereExpression()) {
                 $newCriteria->andWhere($c->getWhereExpression());
             }
+
+            //order
             if ($c->getOrderings()) {
-                $newCriteria->orderBy($c->getOrderings());
+                foreach ($c->getOrderings() as $by => $order) {
+                    if (array_key_exists($by, $newCriteria->getOrderings())) {
+                        throw new \Nette\InvalidArgumentException("Order can be set only by one known properties.");
+                    }
+                    $newCriteria->orderBy([$by => $order]);
+                }
             }
-//            if($->get);
-            if ($newCriteria->getFirstResult()) {
-                $newCriteria->setFirstResult($firstResult);
+
+            //limit
+            if ($c->getFirstResult() != null) {
+                if ($newCriteria->getFirstResult() != null) {
+                    throw new \Nette\InvalidArgumentException("Limit can be set only by one known properties.");
+                }
+                $newCriteria->setFirstResult($c->getFirstResult());
+            }
+            if ($c->getMaxResults() != null) {
+                if ($newCriteria->getMaxResults() != null) {
+                    throw new \Nette\InvalidArgumentException("Limit can be set only by one known properties.");
+                }
+                $newCriteria->setMaxResults($c->getMaxResults());
             }
         }
 

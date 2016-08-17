@@ -25,4 +25,12 @@ interface IDataLoaderDriver
      * @return boolean
      */
     public function canPrepare($dataSpace);
+    
+    /**
+     * Returns name of status used to store returned value
+     * 
+     * @param DataSpace $dataSpace
+     * @return string
+     */
+    public function getStatusName($dataSpace);
 }

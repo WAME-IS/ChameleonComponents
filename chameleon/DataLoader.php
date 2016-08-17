@@ -70,10 +70,9 @@ class DataLoader extends Object
         foreach ($iterator as $dataSpace) {
             $driver = $this->selectDataDriver($dataSpace);
 
-            $name = $dataSpace->getDataDefinition()->getTarget()->getStatusName();
             $callback = $driver->prepareCallback($dataSpace);
 
-            $dataSpace->getControl()->getStatus()->set($name, $callback);
+            $dataSpace->getControl()->getStatus()->set($driver->getStatusName($dataSpace), $callback);
         }
     }
 

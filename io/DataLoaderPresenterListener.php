@@ -7,8 +7,11 @@ use Nette\Application\Application;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
 use Nette\DI\Container;
+use Nette\InvalidArgumentException;
 use Nette\Object;
 use Wame\ChameleonComponents\DataLoader;
+use Wame\ChameleonComponents\Definition\ControlDataDefinition;
+use Wame\ChameleonComponents\Definition\DataDefinition;
 
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
@@ -54,6 +57,15 @@ class DataLoaderPresenterListener extends Object
         $dataDefinition = null;
         if ($control instanceof DataLoaderControl) {
             $dataDefinition = $control->getDataDefinition();
+            if ($dataDefinition instanceof \Wame\ChameleonComponents\Definition\DataDefinition || is_array($dataDefinition)) {
+                $dataDefinition = new ControlDataDefinition($control, $dataDefinition);
+            }
+        }
+
+        if ($dataDefinition && !$dataDefinition instanceof ControlDataDefinition) {
+            $e = new \Nette\InvalidArgumentException("getDataDefinition function has to return ControlDataDefinition or DataDefinition(s)");
+            $e->dataDefinition = $dataDefinition;
+            throw $e;
         }
 
         $childDataDefinitions = [];

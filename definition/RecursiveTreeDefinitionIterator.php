@@ -23,7 +23,7 @@ class RecursiveTreeDefinitionIterator extends \RecursiveArrayIterator implements
      */
     public function getChildren()
     {
-        return new RecursiveControlDefinitionIterator($this->current()->getChildren());
+        return new RecursiveTreeDefinitionIterator($this->current()->getChildren());
     }
 
     /**

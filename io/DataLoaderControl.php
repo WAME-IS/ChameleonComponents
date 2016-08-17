@@ -15,7 +15,7 @@ interface DataLoaderControl
     /**
      * Get definition of data that should be loaded by DataLoader
      * 
-     * @return ControlDataDefinition Definition
+     * @return ControlDataDefinition|DataDefinition|DataDefinition[] Definition
      */
     public function getDataDefinition();
 }
