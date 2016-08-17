@@ -17,7 +17,7 @@ class Combiner
      */
     public static function combineDataDefinitions(...$dataDefinitions)
     {
-        
+
         if (count($dataDefinitions) < 2) {
             throw new InvalidArgumentException("At least two DataDefinitions have to be specified.");
         }
@@ -26,7 +26,7 @@ class Combiner
         $knownProperties = null;
 
         foreach ($dataDefinitions as $dataDefinition) {
-            $target = self::combineTargets(false, $target, $dataDefinition->getTarget());
+            $target = self::combineTargets(false, false, $target, $dataDefinition->getTarget());
             $knownProperties = self::combineCriteria($knownProperties, $dataDefinition->getKnownProperties());
         }
 
@@ -42,18 +42,23 @@ class Combiner
      * When $dry parameter is set to TRUE no exceptions will be thrown but succesfulnes result is returned insted (TRUE/FALSE).
      * 
      * @param boolean $dry
+     * @param boolean $similar
      * @param DataDefinitionTarget[] $targets
      */
-    public static function combineTargets($dry, ...$targets)
+    public static function combineTargets($dry, $similar, ...$targets)
     {
         if (count($targets) < 2) {
             throw new InvalidArgumentException("At least two tarets have to be specified.");
         }
 
+        if (!$dry && $similar) {
+            throw new InvalidArgumentException("Argument similar can be only used in dry run.");
+        }
+
         $target = array_shift($targets);
         $type = $target->getType();
         $list = $target->isList();
-        $queryType = null;
+        $queryType = $target->getQueryType();
 
         if (!is_string($type) && !is_array($type)) {
             if ($dry) {
@@ -137,19 +142,17 @@ class Combiner
                     }
                 }
             }
-            
+
             /*
              * QueryType
              */
-            if ($queryType == null) {
-                $queryType = $target->getQueryType();
-            } else {
-                if ($queryType != $target->getQueryType()) {
-                    if ($dry) {
+            if ($queryType != $target->getQueryType()) {
+                if ($dry) {
+                    if (!$similar) {
                         return false;
-                    } else {
-                        throw new InvalidArgumentException("Cannot use two different values for property 'queryType' $queryType and {$target->getQueryType()}");
                     }
+                } else {
+                    throw new InvalidArgumentException("Cannot use two different values for property 'queryType' $queryType and {$target->getQueryType()}");
                 }
             }
         }

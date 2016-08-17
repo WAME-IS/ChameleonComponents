@@ -195,6 +195,4 @@ class DataSpacesBuilderTest extends TestCase
 }
 
 $test = new DataSpacesBuilderTest();
-//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-$test->testChildDefinitionMergeKnown();
-//$test->run();
+$test->run();

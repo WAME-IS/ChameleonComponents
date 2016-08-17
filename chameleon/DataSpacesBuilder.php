@@ -81,8 +81,24 @@ class DataSpacesBuilder
             }
         }
 
-        //create new dataSpace
-        $this->addDataSpace(new DataSpace($control, $dataDefinition));
+        // no same target found, create new DataSpace
+        // find parent DataSpace
+        $dsgen = $this->parentDataSpaceGenerator($control);
+        $parent = null;
+        
+        foreach ($dsgen as $dataSpace) {
+            if ($this->canBeSameTarget($dataSpace->getDataDefinition()->getTarget(), $dataDefinition->getTarget(), true)) {
+                $parent = $dataSpace;
+                break;
+            }
+        }
+        
+        $dataSpace = new DataSpace($control, $dataDefinition);
+        if ($parent) {
+            $dataSpace->setParent($parent);
+        }
+        
+        $this->addDataSpace($dataSpace);
     }
 
     /**
@@ -91,7 +107,6 @@ class DataSpacesBuilder
      */
     private function parentDataSpaceGenerator($control)
     {
-
         $gen = function() use ($control) {
             //TOOD improve performance?
             $parent = $control;
@@ -110,9 +125,9 @@ class DataSpacesBuilder
     /**
      * @param DataDefinitionTarget[] $targets
      */
-    private function canBeSameTarget(...$targets)
+    private function canBeSameTarget($target1, $target2, $similar = false)
     {
-        return Combiner::combineTargets(true, ...$targets);
+        return Combiner::combineTargets(true, $similar, $target1, $target2);
     }
 
     /**

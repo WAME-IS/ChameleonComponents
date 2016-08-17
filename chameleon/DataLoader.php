@@ -46,13 +46,12 @@ class DataLoader extends Object
     {
 //TODO      $this->cache
 
-        \Tracy\Debugger::barDump($controlDataDefinitions);
-        
         $dataSpaceBuilder = $this->dataSpacesBuilderFactory->create($controlDataDefinitions);
         $dataSpaces = $dataSpaceBuilder->buildDataSpaces();
 
+        \Tracy\Debugger::$maxDepth = 4;
         \Tracy\Debugger::barDump($dataSpaces);
-        
+
         $this->prepareDataSpaces($dataSpaces);
 
 //TODO      $this->cache
