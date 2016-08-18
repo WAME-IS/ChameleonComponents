@@ -23,7 +23,7 @@ class ControlDataDefinition extends Object
      * @param Control $control
      * @param DataDefinition[] $definitions
      */
-    public function __construct(Control $control, $definitions = null)
+    public function __construct($control, $definitions = null)
     {
         $this->control = $control;
         if ($definitions) {
@@ -46,7 +46,7 @@ class ControlDataDefinition extends Object
     /**
      * @param Control $control
      */
-    function setControl(Control $control)
+    function setControl($control)
     {
         $this->control = $control;
     }

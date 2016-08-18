@@ -26,7 +26,7 @@ class DataSpace extends Object
      * @param Control $control
      * @param DataDefinition $dataDefinition
      */
-    public function __construct(Control $control = null, DataDefinition $dataDefinition = null)
+    public function __construct($control = null, DataDefinition $dataDefinition = null)
     {
         $this->control = $control;
         $this->dataDefinition = $dataDefinition;
@@ -43,7 +43,7 @@ class DataSpace extends Object
     /**
      * @param Control $control
      */
-    function setControl(Control $control)
+    function setControl($control)
     {
         $this->control = $control;
         return $this;
