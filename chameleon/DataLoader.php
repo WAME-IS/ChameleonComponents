@@ -72,6 +72,8 @@ class DataLoader extends Object
             $callback = $driver->prepareCallback($dataSpace);
 
             $dataSpace->getControl()->getStatus()->set($driver->getStatusName($dataSpace), $callback);
+            
+            \Tracy\Debugger::barDump($callback);
         }
     }
 

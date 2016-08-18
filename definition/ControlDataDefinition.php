@@ -19,6 +19,12 @@ class ControlDataDefinition extends Object
     /** @var DataDefinition[] */
     private $definitions;
 
+    /** @var boolean */
+    private $triggersProcessing = false;
+
+    /** @var boolean */
+    private $processed = false;
+
     /**
      * @param Control $control
      * @param DataDefinition[] $definitions
@@ -65,5 +71,39 @@ class ControlDataDefinition extends Object
     function getDataDefinitions()
     {
         return $this->definitions;
+    }
+
+    /**
+     * @return boolean
+     */
+    function isTriggersProcessing()
+    {
+        return $this->triggersProcessing;
+    }
+
+    /**
+     * @param boolean $triggersProcessing
+     */
+    function setTriggersProcessing($triggersProcessing)
+    {
+        $this->triggersProcessing = $triggersProcessing;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    function isProcessed()
+    {
+        return $this->processed;
+    }
+
+    /**
+     * @param type $processed
+     */
+    function setProcessed($processed)
+    {
+        $this->processed = $processed;
+        return $this;
     }
 }

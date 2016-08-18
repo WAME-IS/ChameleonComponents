@@ -171,7 +171,7 @@ class Combiner
     {
 
         if (count($criteria) < 2) {
-            throw new InvalidArgumentException("At least two criteria objects have to be specified.");
+            self::throwCombineException("At least two criteria objects have to be specified.", $criteria);
         }
 
         /* @var $c \Doctrine\Common\Collections\Criteria */
@@ -196,7 +196,7 @@ class Combiner
             if ($c->getOrderings()) {
                 foreach ($c->getOrderings() as $by => $order) {
                     if (array_key_exists($by, $newCriteria->getOrderings())) {
-                        throw new \Nette\InvalidArgumentException("Order can be set only by one known properties.");
+                        self::throwCombineException("Order can be set only by one known properties.", $criteria);
                     }
                     $newCriteria->orderBy([$by => $order]);
                 }
@@ -205,18 +205,25 @@ class Combiner
             //limit
             if ($c->getFirstResult() != null) {
                 if ($newCriteria->getFirstResult() != null) {
-                    throw new \Nette\InvalidArgumentException("Limit can be set only by one known properties.");
+                    self::throwCombineException("Limit can be only set by one controls known properties.", $criteria);
                 }
                 $newCriteria->setFirstResult($c->getFirstResult());
             }
             if ($c->getMaxResults() != null) {
                 if ($newCriteria->getMaxResults() != null) {
-                    throw new \Nette\InvalidArgumentException("Limit can be set only by one known properties.");
+                    self::throwCombineException("Limit can be only set by one controls known properties.", $criteria);
                 }
                 $newCriteria->setMaxResults($c->getMaxResults());
             }
         }
 
         return $newCriteria;
+    }
+    
+    private static function throwCombineException($message, $criteria)
+    {
+        $e = new \Nette\InvalidArgumentException($message);
+        $e->criteria = $criteria;
+        throw $e;
     }
 }

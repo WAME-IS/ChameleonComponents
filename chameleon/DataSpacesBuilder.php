@@ -47,7 +47,13 @@ class DataSpacesBuilder
         /* @var $controlDataDefinition \Wame\ChameleonComponents\Definition\ControlDataDefinition */
         $controlDataDefinition = null;
         foreach ($iterator as $controlDataDefinition) {
+            if ($controlDataDefinition->isProcessed()) {
+                continue;
+            }
+            
             $this->processControlDefinition($controlDataDefinition, $iterator->getDepth());
+            
+            $controlDataDefinition->setProcessed(true);
         }
 
 //        $this->validateDataSpaces();
@@ -85,19 +91,19 @@ class DataSpacesBuilder
         // find parent DataSpace
         $dsgen = $this->parentDataSpaceGenerator($control);
         $parent = null;
-        
+
         foreach ($dsgen as $dataSpace) {
             if ($this->canBeSameTarget($dataSpace->getDataDefinition()->getTarget(), $dataDefinition->getTarget(), true)) {
                 $parent = $dataSpace;
                 break;
             }
         }
-        
+
         $dataSpace = new DataSpace($control, $dataDefinition);
         if ($parent) {
             $dataSpace->setParent($parent);
         }
-        
+
         $this->addDataSpace($dataSpace);
     }
 
