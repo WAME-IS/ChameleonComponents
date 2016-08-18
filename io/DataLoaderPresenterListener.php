@@ -7,11 +7,14 @@ use Nette\Application\Application;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
 use Nette\ComponentModel\Container;
+use Nette\DI\Container as Container2;
 use Nette\InvalidArgumentException;
 use Nette\Object;
+use RecursiveIteratorIterator;
 use Wame\ChameleonComponents\DataLoader;
 use Wame\ChameleonComponents\Definition\ControlDataDefinition;
 use Wame\ChameleonComponents\Definition\DataDefinition;
+use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
 
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
@@ -19,16 +22,16 @@ use Wame\ChameleonComponents\Definition\DataDefinition;
 class DataLoaderPresenterListener extends Object
 {
 
-    /** @var \Nette\DI\Container */
+    /** @var Container2 */
     private $container;
-    
+
     /** @var DataDefinition[] */
     private $dataDefinitions;
-    
+
     /** @var Control[] */
     private $toRead = [];
 
-    public function __construct(Application $application, \Nette\DI\Container $container)
+    public function __construct(Application $application, Container2 $container)
     {
         $this->container = $container;
         $application->onPresenter[] = function($application, $presenter) {
@@ -42,23 +45,23 @@ class DataLoaderPresenterListener extends Object
 
     public function load(Presenter $presenter)
     {
-        $this->toRead[] = ['control' => $presenter, 'parent' => NULL, 'exclude' => []];
-        
-        while($this->toRead) {
+        $this->toRead[] = ['control' => $presenter, 'parent' => NULL];
+
+        while ($this->toRead) {
             $toRead = array_shift($this->toRead);
-            $dataDefinitions = $this->readDataDefinitions($toRead['control'], $toRead['exclude']);
-            if($toRead['parent']) {
-                foreach($dataDefinitions as $dataDefinition) {
+            $dataDefinitions = $this->readDataDefinitions($toRead['control']);
+            if ($toRead['parent']) {
+                foreach ($dataDefinitions as $dataDefinition) {
                     $dataDefinition->setParent($toRead['parent']);
                 }
             } else {
                 $this->dataDefinitions = $dataDefinitions;
             }
-            
+
             $this->processDefinitions();
         }
     }
-    
+
     protected function processDefinitions()
     {
         if ($this->dataDefinitions) {
@@ -72,39 +75,33 @@ class DataLoaderPresenterListener extends Object
      * Reads DataDefinitions from control and its childs
      * 
      * @param Control $control
-     * @param Control[] $exclude Child components to exclude
      * @return array
      */
-    protected function readDataDefinitions($control, $exclude)
+    protected function readDataDefinitions($control)
     {
 
         $dataDefinition = $this->readControlDataDefinition($control);
 
-        $childDataDefinitions = $this->readChildDataDefinitions($control, $exclude);
+        $childDataDefinitions = $this->readChildDataDefinitions($control);
 
         if ($dataDefinition) {
             $dataDefinition->setChildren($childDataDefinitions);
-            
-            if($dataDefinition->isTriggersProcessing()) {
-                
-                $childControls = array_unique(array_map(function($childDataDefinition){
-                    return $childDataDefinition->getControl();
-                }, $childDataDefinitions));
-                
-                $this->toRead[] = ['control' => $dataDefinition->getControl(), 'parent' => $dataDefinition, 'exclude' => $childControls];
+
+            if ($dataDefinition->isTriggersProcessing()) {
+                $this->toRead[] = ['control' => $dataDefinition->getControl(), 'parent' => $dataDefinition];
             }
-            
+
             return [$dataDefinition];
         } else {
             return $childDataDefinitions;
         }
     }
-    
+
     private function readControlDataDefinition($control)
     {
         $dataDefinition = null;
-        
-        if ($control instanceof DataLoaderControl) {
+
+        if ($control instanceof DataLoaderControl && !$this->isProcessed($control)) {
             $dataDefinition = $control->getDataDefinition($this);
             if ($dataDefinition instanceof DataDefinition || is_array($dataDefinition)) {
                 $dataDefinition = new ControlDataDefinition($control, $dataDefinition);
@@ -116,21 +113,35 @@ class DataLoaderPresenterListener extends Object
             $e->dataDefinition = $dataDefinition;
             throw $e;
         }
-        
+
         return $dataDefinition;
     }
-    
-    private function readChildDataDefinitions($control, $exclude)
+
+    private function readChildDataDefinitions($control)
     {
         $childDataDefinitions = [];
-        if($control instanceof Container) {
+        if ($control instanceof Container) {
             foreach ($control->getComponents() as $subcontrol) {
-                if(in_array($subcontrol, $exclude)) {
+                if ($this->isProcessed($subcontrol)) {
                     continue;
                 }
                 $childDataDefinitions = array_merge($childDataDefinitions, $this->readDataDefinitions($subcontrol, []));
             }
         }
         return $childDataDefinitions;
+    }
+
+    private function isProcessed($control)
+    {
+        if ($this->dataDefinitions) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($this->dataDefinitions), RecursiveIteratorIterator::SELF_FIRST);
+
+            foreach ($iterator as $controlDataDefinition) {
+                if ($controlDataDefinition->getControl() === $control) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

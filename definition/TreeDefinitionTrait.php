@@ -44,7 +44,7 @@ trait TreeDefinitionTrait
         if (!is_a($child, get_class($this))) {
             throw new InvalidArgumentException("Only same types of objects can be added as children.");
         }
-        if (!in_array($child, $this->children)) {
+        if (!in_array($child, $this->children, true)) {
             $this->children[] = $child;
             $child->setParent($this);
         }
