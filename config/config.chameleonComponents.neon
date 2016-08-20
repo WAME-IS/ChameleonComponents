@@ -10,3 +10,11 @@ services:
     # Registers
     DataLoaderDriverRegister:
         class: Wame\ChameleonComponents\Registers\DataLoaderDriverRegister
+        setup:
+            - add(Wame\ChameleonComponents\Registers\Types\StatusDataLoaderDriver(), 'StatusDataLoaderDriver', 80)
+
+    QueryTypesRegister:
+        class: Wame\ChameleonComponents\Registers\QueryTypesRegister
+        setup:
+            - add(Wame\ChameleonComponents\Registers\Types\QueryTypeSelect(), 'select')
+            - add(Wame\ChameleonComponents\Registers\Types\QueryTypeCountList(), 'countList')

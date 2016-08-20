@@ -6,8 +6,7 @@ use App\Core\Presenters\BasePresenter;
 use Nette\Application\Application;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
-use Nette\ComponentModel\Container;
-use Nette\DI\Container as Container2;
+use Nette\DI\Container;
 use Nette\InvalidArgumentException;
 use Nette\Object;
 use RecursiveIteratorIterator;
@@ -22,7 +21,7 @@ use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
 class DataLoaderPresenterListener extends Object
 {
 
-    /** @var Container2 */
+    /** @var Container */
     private $container;
 
     /** @var DataDefinition[] */
@@ -31,7 +30,7 @@ class DataLoaderPresenterListener extends Object
     /** @var Control[] */
     private $toRead = [];
 
-    public function __construct(Application $application, Container2 $container)
+    public function __construct(Application $application, Container $container)
     {
         $this->container = $container;
         $application->onPresenter[] = function($application, $presenter) {
@@ -60,6 +59,10 @@ class DataLoaderPresenterListener extends Object
 
             $this->processDefinitions();
         }
+        
+//        \Tracy\Debugger::$maxDepth = 5;
+//        \Tracy\Debugger::barDump($this->dataDefinitions);
+//        \Tracy\Debugger::$maxDepth = 3;
     }
 
     protected function processDefinitions()
@@ -99,6 +102,9 @@ class DataLoaderPresenterListener extends Object
 
     private function readControlDataDefinition($control)
     {
+//        \Tracy\Debugger::$maxDepth = 5;
+                dump($control);
+        
         $dataDefinition = null;
 
         if ($control instanceof DataLoaderControl && !$this->isProcessed($control)) {
@@ -113,6 +119,8 @@ class DataLoaderPresenterListener extends Object
             $e->dataDefinition = $dataDefinition;
             throw $e;
         }
+        
+        dump(boolval($dataDefinition));
 
         return $dataDefinition;
     }
@@ -120,12 +128,9 @@ class DataLoaderPresenterListener extends Object
     private function readChildDataDefinitions($control)
     {
         $childDataDefinitions = [];
-        if ($control instanceof Container) {
+        if ($control instanceof \Nette\ComponentModel\Container) {
             foreach ($control->getComponents() as $subcontrol) {
-                if ($this->isProcessed($subcontrol)) {
-                    continue;
-                }
-                $childDataDefinitions = array_merge($childDataDefinitions, $this->readDataDefinitions($subcontrol, []));
+                $childDataDefinitions = array_merge($childDataDefinitions, $this->readDataDefinitions($subcontrol));
             }
         }
         return $childDataDefinitions;
@@ -143,5 +148,10 @@ class DataLoaderPresenterListener extends Object
             }
         }
         return false;
+    }
+    
+    function getDataDefinitions()
+    {
+        return $this->dataDefinitions;
     }
 }

@@ -203,13 +203,13 @@ class Combiner
             }
 
             //limit
-            if ($c->getFirstResult() != null) {
+            if ($c->getFirstResult() != null && $c->getFirstResult() != $newCriteria->getFirstResult()) {
                 if ($newCriteria->getFirstResult() != null) {
                     self::throwCombineException("Limit can be only set by one controls known properties.", $criteria);
                 }
                 $newCriteria->setFirstResult($c->getFirstResult());
             }
-            if ($c->getMaxResults() != null) {
+            if ($c->getMaxResults() != null && $c->getMaxResults() != $newCriteria->getMaxResults()) {
                 if ($newCriteria->getMaxResults() != null) {
                     self::throwCombineException("Limit can be only set by one controls known properties.", $criteria);
                 }

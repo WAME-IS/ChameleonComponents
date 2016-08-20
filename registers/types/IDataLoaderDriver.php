@@ -10,6 +10,7 @@ use Wame\ChameleonComponents\Definition\DataSpace;
  */
 interface IDataLoaderDriver
 {
+    
     /**
      * Prepare callback for loading data
      * 
@@ -26,11 +27,4 @@ interface IDataLoaderDriver
      */
     public function canPrepare($dataSpace);
     
-    /**
-     * Returns name of status used to store returned value
-     * 
-     * @param DataSpace $dataSpace
-     * @return string
-     */
-    public function getStatusName($dataSpace);
 }

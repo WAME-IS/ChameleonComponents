@@ -3,7 +3,6 @@
 namespace Wame\ChameleonComponents\Definition;
 
 use Nette\Object;
-use Wame\Utils\Strings;
 
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
@@ -93,17 +92,5 @@ class DataDefinitionTarget extends Object
     {
         $this->queryType = $queryType;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatusName()
-    {
-        $name = $this->type;
-        if ($this->isList()) {
-            $name = Strings::plural($name);
-        }
-        return $name;
     }
 }

@@ -4,13 +4,16 @@ namespace Wame\ChameleonComponents;
 
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
-use Nette\InvalidArgumentException;
 use Nette\Object;
 use RecursiveIteratorIterator;
 use Wame\ChameleonComponents\Definition\ControlDataDefinition;
 use Wame\ChameleonComponents\Definition\DataSpace;
 use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
+use Wame\ChameleonComponents\IDataLoaderDriver;
+use Wame\ChameleonComponents\IDataSpacesBuilderFactory;
 use Wame\ChameleonComponents\Registers\DataLoaderDriverRegister;
+use Wame\ChameleonComponents\Registers\QueryTypesRegister;
+use WebLoader\InvalidArgumentException;
 
 /**
  * Heart of ChameleonComponents. (Powerful tool for making components that can 
@@ -21,19 +24,25 @@ use Wame\ChameleonComponents\Registers\DataLoaderDriverRegister;
 class DataLoader extends Object
 {
 
+    const DEFAULT_QUERY_TYPE = 'select';
+
     /** @var IDataSpacesBuilderFactory */
     private $dataSpacesBuilderFactory;
 
     /** @var DataLoaderDriverRegister */
     private $dataLoaderDriverRegister;
 
+    /** @var QueryTypesRegister */
+    private $queryTypesRegister;
+
     /** @var Cache */
     private $cache;
 
-    public function __construct(IDataSpacesBuilderFactory $dataSpacesBuilderFactory, DataLoaderDriverRegister $dataLoaderDriverRegister, IStorage $cacheStorage)
+    public function __construct(IDataSpacesBuilderFactory $dataSpacesBuilderFactory, DataLoaderDriverRegister $dataLoaderDriverRegister, QueryTypesRegister $queryTypesRegister, IStorage $cacheStorage)
     {
         $this->dataSpacesBuilderFactory = $dataSpacesBuilderFactory;
         $this->dataLoaderDriverRegister = $dataLoaderDriverRegister;
+        $this->queryTypesRegister = $queryTypesRegister;
         $this->cache = new Cache($cacheStorage, "DataLoader");
     }
 
@@ -49,11 +58,7 @@ class DataLoader extends Object
         $dataSpaceBuilder = $this->dataSpacesBuilderFactory->create($controlDataDefinitions);
         $dataSpaces = $dataSpaceBuilder->buildDataSpaces();
 
-        \Tracy\Debugger::$maxDepth = 4;
-        \Tracy\Debugger::barDump($dataSpaces);
-
         $this->prepareDataSpaces($dataSpaces);
-
 //TODO      $this->cache
 
         return $dataSpaces;
@@ -67,13 +72,18 @@ class DataLoader extends Object
         $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($dataSpaces), RecursiveIteratorIterator::SELF_FIRST);
 
         foreach ($iterator as $dataSpace) {
+            /* @var $dataSpace DataSpace */
+
+            $this->putDefaultQueryType($dataSpace);
+
             $driver = $this->selectDataDriver($dataSpace);
 
             $callback = $driver->prepareCallback($dataSpace);
 
-            $dataSpace->getControl()->getStatus()->set($driver->getStatusName($dataSpace), $callback);
-            
-//            \Tracy\Debugger::barDump($callback);
+            if ($callback) {
+                $statusName = $this->getStatusName($dataSpace);
+                $dataSpace->getControl()->getStatus()->set($statusName, $callback);
+            }
         }
     }
 
@@ -97,5 +107,32 @@ class DataLoader extends Object
         $e = new InvalidArgumentException("Cannot find driver that can be used to load this DataSpace");
         $e->dataSpace = $dataSpace;
         throw $e;
+    }
+
+    /**
+     * @param DataSpace $dataSpace
+     */
+    private function putDefaultQueryType($dataSpace)
+    {
+        $target = $dataSpace->getDataDefinition()->getTarget();
+        if (!$target->getQueryType()) {
+            $target->setQueryType(self::DEFAULT_QUERY_TYPE);
+        }
+    }
+
+    /**
+     * @param DataSpace $dataSpace
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    private function getStatusName($dataSpace)
+    {
+        $qtn = $dataSpace->getDataDefinition()->getTarget()->getQueryType();
+        $qt = $this->queryTypesRegister->getByName($qtn);
+        if ($qt) {
+            return $qt->getStatusName($dataSpace);
+        } else {
+            throw new InvalidArgumentException("Invalid queryType $qtn.");
+        }
     }
 }
