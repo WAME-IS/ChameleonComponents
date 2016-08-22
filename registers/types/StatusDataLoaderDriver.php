@@ -3,6 +3,7 @@
 namespace Wame\ChameleonComponents\Registers\Types;
 
 use Nette\InvalidArgumentException;
+use Wame\ChameleonComponents\Definition\DataDefinition;
 use Wame\ChameleonComponents\Definition\DataSpace;
 use Wame\ChameleonComponents\IDataLoaderDriver;
 use Wame\ChameleonComponents\Registers\QueryTypesRegister;
@@ -51,7 +52,10 @@ class StatusDataLoaderDriver implements IDataLoaderDriver
      */
     private function getStatusName($dataSpace)
     {
-        $qtn = $dataSpace->getDataDefinition()->getTarget()->getQueryType();
+        $qtn = $dataSpace->getDataDefinition()->getQueryType();
+        if(!$qtn) {
+            $qtn = DataDefinition::DEFAULT_QUERY_TYPE;
+        }
         $qt = $this->queryTypesRegister->getByName($qtn);
         if ($qt) {
             return $qt->getStatusName($dataSpace);

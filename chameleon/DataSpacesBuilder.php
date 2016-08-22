@@ -100,6 +100,11 @@ class DataSpacesBuilder
 
         foreach ($dsgen as $dataSpace) {
             if ($this->canBeSameTarget($dataSpace->getDataDefinition()->getTarget(), $dataDefinition->getTarget())) {
+                
+                if($dataSpace->getDataDefinition()->getQueryType() != $dataDefinition->getQueryType()) {
+                    continue;
+                }
+                
                 $dataSpace->setDataDefinition(Combiner::combineDataDefinitions($dataSpace->getDataDefinition(), $dataDefinition));
                 return;
             }
