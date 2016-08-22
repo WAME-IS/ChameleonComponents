@@ -8,7 +8,7 @@ use Wame\ChameleonComponents\IO\DataLoaderControl;
 use Wame\ChameleonComponents\IO\DataLoaderPresenterListener;
 use Wame\ComponentDebugger\Registers\Types\IComponentDebuggerType;
 
-class DataSpaceComponentDebugger implements IComponentDebuggerType
+class DataDefinitionComponentDebugger implements IComponentDebuggerType
 {
 
     /** @var DataLoaderPresenterListener */
@@ -26,7 +26,7 @@ class DataSpaceComponentDebugger implements IComponentDebuggerType
 
     public function getTitle()
     {
-        return "Chameleon Space";
+        return "Chameleon Definition";
     }
 
     public function getBorderColor()
@@ -36,12 +36,12 @@ class DataSpaceComponentDebugger implements IComponentDebuggerType
 
     public function getControlData($control)
     {
-        if ($this->dataLoaderPresenterListener->getDataSpaces()) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($this->dataLoaderPresenterListener->getDataSpaces()), RecursiveIteratorIterator::SELF_FIRST);
+        if ($this->dataLoaderPresenterListener->getDataDefinitions()) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($this->dataLoaderPresenterListener->getDataDefinitions()), RecursiveIteratorIterator::SELF_FIRST);
 
-            foreach ($iterator as $dataSpace) {
-                if ($dataSpace->getControl() === $control) {
-                    return $dataSpace;
+            foreach ($iterator as $controlDataDefinition) {
+                if ($controlDataDefinition->getControl() === $control) {
+                    return $controlDataDefinition->getDataDefinitions();
                 }
             }
         }

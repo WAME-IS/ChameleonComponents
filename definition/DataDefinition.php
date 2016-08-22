@@ -12,8 +12,13 @@ use Nette\Object;
 class DataDefinition extends Object
 {
 
+    const DEFAULT_QUERY_TYPE = 'select';
+
     /** @var DataDefinitionTarget */
     private $target;
+
+    /** @var string */
+    private $queryType;
 
     /** @var Criteria */
     private $knownProperties;
@@ -24,12 +29,14 @@ class DataDefinition extends Object
     /**
      * @param DataDefinitionTarget $target
      * @param Criteria $knownProperties
+     * @param string $queryType
      */
-    public function __construct($target = null, $knownProperties = null)
+    public function __construct($target = null, $knownProperties = null, $queryType = null)
     {
         $this->target = $target;
         $this->knownProperties = $knownProperties;
         $this->hints = [];
+        $this->queryType = $queryType;
     }
 
     /**
@@ -72,6 +79,14 @@ class DataDefinition extends Object
     }
 
     /**
+     * @return string
+     */
+    function getQueryType()
+    {
+        return $this->queryType;
+    }
+
+    /**
      * @param DataDefinitionTarget $target
      */
     public function setTarget(DataDefinitionTarget $target)
@@ -90,12 +105,33 @@ class DataDefinition extends Object
     }
 
     /**
+     * @param array $hints
+     */
+    public function setHints($hints)
+    {
+        $this->hints = $hints;
+        return $this;
+    }
+    
+    /**
      * @param string $name
      * @param mixed $value
      */
     public function setHint($name, $value)
     {
         $this->hints[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * @param string $queryType
+     */
+    public function setQueryType($queryType)
+    {
+        if ($queryType == self::DEFAULT_QUERY_TYPE) {
+            $queryType = null;
+        }
+        $this->queryType = $queryType;
         return $this;
     }
 }

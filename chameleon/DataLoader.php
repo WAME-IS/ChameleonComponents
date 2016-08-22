@@ -7,6 +7,7 @@ use Nette\Caching\IStorage;
 use Nette\Object;
 use RecursiveIteratorIterator;
 use Wame\ChameleonComponents\Definition\ControlDataDefinition;
+use Wame\ChameleonComponents\Definition\DataDefinition;
 use Wame\ChameleonComponents\Definition\DataSpace;
 use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
 use Wame\ChameleonComponents\IDataLoaderDriver;
@@ -23,8 +24,6 @@ use WebLoader\InvalidArgumentException;
  */
 class DataLoader extends Object
 {
-
-    const DEFAULT_QUERY_TYPE = 'select';
 
     /** @var IDataSpacesBuilderFactory */
     private $dataSpacesBuilderFactory;
@@ -51,11 +50,11 @@ class DataLoader extends Object
      * @param ControlDataDefinition[] $controlDataDefinitions
      * @return DataSpace[]
      */
-    public function processDataDefinitions($controlDataDefinitions)
+    public function processDataDefinitions($controlDataDefinitions, $dataSpaces = null)
     {
 //TODO      $this->cache
 
-        $dataSpaceBuilder = $this->dataSpacesBuilderFactory->create($controlDataDefinitions);
+        $dataSpaceBuilder = $this->dataSpacesBuilderFactory->create($controlDataDefinitions, $dataSpaces);
         $dataSpaces = $dataSpaceBuilder->buildDataSpaces();
 
         $this->prepareDataSpaces($dataSpaces);
@@ -114,9 +113,9 @@ class DataLoader extends Object
      */
     private function putDefaultQueryType($dataSpace)
     {
-        $target = $dataSpace->getDataDefinition()->getTarget();
-        if (!$target->getQueryType()) {
-            $target->setQueryType(self::DEFAULT_QUERY_TYPE);
+        $dataDefinition = $dataSpace->getDataDefinition();
+        if (!$dataDefinition->getQueryType()) {
+            $dataDefinition->setQueryType(DataDefinition::DEFAULT_QUERY_TYPE);
         }
     }
 

@@ -22,19 +22,31 @@ class Combiner
             throw new InvalidArgumentException("At least two DataDefinitions have to be specified.");
         }
 
-        $target = new DataDefinitionTarget(DataSpacesBuilder::ANY_TYPE_CHAR);
-        $knownProperties = null;
+        $target = self::combineTargets(false, ...array_map(
+                    function($dataDefinition) {
+                    return $dataDefinition->getTarget();
+                }, $dataDefinitions));
+        $knownProperties = self::combineCriteria(...array_map(
+                    function($dataDefinition) {
+                    return $dataDefinition->getKnownProperties();
+                }, $dataDefinitions));
+        $queryType = self::combineQueryType(...array_map(
+                    function($dataDefinition) {
+                    return $dataDefinition->getQueryType();
+                }, $dataDefinitions));
+        $hints = self::combineHints(...array_map(
+                    function($dataDefinition) {
+                    return $dataDefinition->getHints();
+                }, $dataDefinitions));
 
-        foreach ($dataDefinitions as $dataDefinition) {
-            $target = self::combineTargets(false, false, $target, $dataDefinition->getTarget());
-            $knownProperties = self::combineCriteria($knownProperties, $dataDefinition->getKnownProperties());
-        }
 
         if (!is_string($target->getType()) || $target->getType() == DataSpacesBuilder::ANY_TYPE_CHAR) {
             throw new InvalidArgumentException("Unable to find single target for DataSpace.");
         }
 
-        return new DataDefinition($target, $knownProperties);
+        $dataDefinition = new DataDefinition($target, $knownProperties, $queryType);
+        $dataDefinition->setHints($hints);
+        return $dataDefinition;
     }
 
     /**
@@ -42,23 +54,17 @@ class Combiner
      * When $dry parameter is set to TRUE no exceptions will be thrown but succesfulnes result is returned insted (TRUE/FALSE).
      * 
      * @param boolean $dry
-     * @param boolean $similar
      * @param DataDefinitionTarget[] $targets
      */
-    public static function combineTargets($dry, $similar, ...$targets)
+    public static function combineTargets($dry, ...$targets)
     {
         if (count($targets) < 2) {
             throw new InvalidArgumentException("At least two tarets have to be specified.");
         }
 
-        if (!$dry && $similar) {
-            throw new InvalidArgumentException("Argument similar can be only used in dry run.");
-        }
-
         $target = array_shift($targets);
         $type = $target->getType();
         $list = $target->isList();
-        $queryType = $target->getQueryType();
 
         if (!is_string($type) && !is_array($type)) {
             if ($dry) {
@@ -142,19 +148,6 @@ class Combiner
                     }
                 }
             }
-
-            /*
-             * QueryType
-             */
-            if ($queryType != $target->getQueryType()) {
-                if ($dry) {
-                    if (!$similar) {
-                        return false;
-                    }
-                } else {
-                    throw new InvalidArgumentException("Cannot use two different values for property 'queryType' $queryType and {$target->getQueryType()}");
-                }
-            }
         }
 
         if ($dry) {
@@ -162,6 +155,51 @@ class Combiner
         } else {
             return new DataDefinitionTarget($type, $list);
         }
+    }
+
+    /**
+     * Function combines query types.
+     * 
+     * @param string[] $queryTypes
+     */
+    public static function combineQueryType(...$queryTypes)
+    {
+        if (count($queryTypes) < 2) {
+            throw new InvalidArgumentException("At least two queryTypes have to be specified.");
+        }
+
+        $queryType = array_shift($queryTypes);
+        while ($q = array_shift($queryTypes)) {
+            if (!$q) {
+                continue;
+            }
+            if (!$queryType && $q) {
+                $queryType = $q;
+            } else if ($q != $queryType) {
+                throw new InvalidArgumentException("Cannot use two different values for property 'queryType' $q and $queryType");
+            }
+        }
+
+        return $queryType;
+    }
+
+    /**
+     * Function combines hints.
+     * 
+     * @param array[] $hints
+     */
+    public static function combineHints(...$hints)
+    {
+        if (count($hints) < 2) {
+            throw new InvalidArgumentException("At least two hints have to be specified.");
+        }
+
+        $newHints = array_shift($hints);
+        while ($hint = array_shift($hints)) {
+            $newHints = array_merge_recursive($newHints, $hint);
+        }
+
+        return $newHints;
     }
 
     /**
@@ -219,7 +257,7 @@ class Combiner
 
         return $newCriteria;
     }
-    
+
     private static function throwCombineException($message, $criteria)
     {
         $e = new \Nette\InvalidArgumentException($message);

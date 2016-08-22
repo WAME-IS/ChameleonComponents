@@ -1,4 +1,5 @@
 services:
     ComponentDebuggerRegister:
         setup:
+            - add(Wame\ChameleonComponents\Vendor\Wame\ComponentDebugger\Registers\Types\DataDefinitionComponentDebugger())
             - add(Wame\ChameleonComponents\Vendor\Wame\ComponentDebugger\Registers\Types\DataSpaceComponentDebugger())

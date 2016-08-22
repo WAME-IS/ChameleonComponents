@@ -11,6 +11,20 @@ use Wame\ChameleonComponents\Definition\DataSpace;
 use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
 
 /**
+ * @author Dominik Gmiterko <ienze@ienze.me>
+ */
+interface IDataSpacesBuilderFactory
+{
+
+    /**
+     * @return DataSpacesBuilder
+     * @param ControlDataDefinition[] $controlDataDefinitions
+     * @param DataSpace[] $dataSpaces
+     */
+    public function create($controlDataDefinitions, $dataSpaces = null);
+}
+
+/**
  * Class used to split website into "DataSpaces" and combine known paramters.
  *
  * @author Dominik Gmiterko <ienze@ienze.me>
@@ -29,14 +43,18 @@ class DataSpacesBuilder
     /**
      * 
      * @param ControlDataDefinition[]|ControlDataDefinition $controlDataDefinitions
+     * @param DataSpace[] $dataSpaces
      * @return DataSpace[]
      */
-    public function __construct($controlDataDefinitions)
+    public function __construct($controlDataDefinitions, $dataSpaces = null)
     {
         if (is_array($controlDataDefinitions)) {
             $this->controlDataDefinitions = $controlDataDefinitions;
         } else {
             $this->controlDataDefinitions = [$controlDataDefinitions];
+        }
+        if ($dataSpaces) {
+            $this->dataSpaces = $dataSpaces;
         }
     }
 
@@ -44,15 +62,15 @@ class DataSpacesBuilder
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveTreeDefinitionIterator($this->controlDataDefinitions), RecursiveIteratorIterator::SELF_FIRST);
 
-        /* @var $controlDataDefinition \Wame\ChameleonComponents\Definition\ControlDataDefinition */
+        /* @var $controlDataDefinition ControlDataDefinition */
         $controlDataDefinition = null;
         foreach ($iterator as $controlDataDefinition) {
             if ($controlDataDefinition->isProcessed()) {
                 continue;
             }
-            
+
             $this->processControlDefinition($controlDataDefinition, $iterator->getDepth());
-            
+
             $controlDataDefinition->setProcessed(true);
         }
 
@@ -88,23 +106,27 @@ class DataSpacesBuilder
         }
 
         // no same target found, create new DataSpace
-        // find parent DataSpace
-        $dsgen = $this->parentDataSpaceGenerator($control);
-        $parent = null;
-
-        foreach ($dsgen as $dataSpace) {
-            if ($this->canBeSameTarget($dataSpace->getDataDefinition()->getTarget(), $dataDefinition->getTarget(), true)) {
-                $parent = $dataSpace;
-                break;
-            }
-        }
-
+        $parentDataSpace = $this->findParentDataSpace($dataDefinition, $control);
         $dataSpace = new DataSpace($control, $dataDefinition);
-        if ($parent) {
-            $dataSpace->setParent($parent);
+        if ($parentDataSpace) {
+            $dataSpace->setParent($parentDataSpace);
         }
 
         $this->addDataSpace($dataSpace);
+    }
+
+    private function findParentDataSpace($dataDefinition, $control)
+    {
+        $dsgen = $this->parentDataSpaceGenerator($control);
+        foreach ($dsgen as $dataSpace) {
+            if ($this->canBeSameTarget($dataSpace->getDataDefinition()->getTarget(), $dataDefinition->getTarget())) {
+                return $dataSpace;
+            }
+        }
+
+        $dsgen = $this->parentDataSpaceGenerator($control);
+
+        return $dsgen->current();
     }
 
     /**
@@ -116,12 +138,13 @@ class DataSpacesBuilder
         $gen = function() use ($control) {
             //TOOD improve performance?
             $parent = $control;
-            while ($parent = $parent->getParent()) {
+            while ($parent) {
                 foreach ($this->dataSpaces as $dataSpace) {
                     if ($dataSpace->getControl() === $parent) {
                         yield $dataSpace;
                     }
                 }
+                $parent = $parent->getParent();
             }
         };
 
@@ -131,9 +154,9 @@ class DataSpacesBuilder
     /**
      * @param DataDefinitionTarget[] $targets
      */
-    private function canBeSameTarget($target1, $target2, $similar = false)
+    private function canBeSameTarget($target1, $target2)
     {
-        return Combiner::combineTargets(true, $similar, $target1, $target2);
+        return Combiner::combineTargets(true, $target1, $target2);
     }
 
     /**
