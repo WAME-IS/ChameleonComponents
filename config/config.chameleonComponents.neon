@@ -4,14 +4,15 @@ services:
     # Factories
     - Wame\ChameleonComponents\IDataSpacesBuilderFactory
 
-    # Presenter
+    # IO
     - {class: Wame\ChameleonComponents\IO\DataLoaderPresenterListener, tags: [run]}
+    - Wame\ChameleonComponents\IO\AutomaticCache
 
     # Registers
     DataLoaderDriverRegister:
         class: Wame\ChameleonComponents\Registers\DataLoaderDriverRegister
         setup:
-            - add(Wame\ChameleonComponents\Registers\Types\StatusDataLoaderDriver(), 'StatusDataLoaderDriver', 80)
+            - add(Wame\ChameleonComponents\Registers\Types\StatusDataLoaderDriver(), 'StatusDataLoaderDriver', {'priority': 80})
 
     QueryTypesRegister:
         class: Wame\ChameleonComponents\Registers\QueryTypesRegister

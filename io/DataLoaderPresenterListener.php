@@ -6,7 +6,7 @@ use App\Core\Presenters\BasePresenter;
 use Nette\Application\Application;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
-use Nette\ComponentModel\Container as Container2;
+use Nette\ComponentModel\Container as ComponentContainer;
 use Nette\DI\Container;
 use Nette\InvalidArgumentException;
 use Nette\Object;
@@ -26,18 +26,22 @@ class DataLoaderPresenterListener extends Object
     /** @var Container */
     private $container;
 
+    /** @var AutomaticCache */
+    private $automaticCahce;
+
     /** @var DataDefinition[] */
     private $dataDefinitions;
-    
+
     /** @var DataSpace[] */
     private $dataSpaces;
 
     /** @var Control[] */
     private $toRead = [];
 
-    public function __construct(Application $application, Container $container)
+    public function __construct(Application $application, Container $container, AutomaticCache $automaticCahce)
     {
         $this->container = $container;
+        $this->automaticCahce = $automaticCahce;
         $application->onPresenter[] = function($application, $presenter) {
             if ($presenter instanceof BasePresenter) {
                 $presenter->onBeforeRender[] = function() use ($presenter) {
@@ -54,6 +58,9 @@ class DataLoaderPresenterListener extends Object
         while ($this->toRead) {
             $toRead = array_shift($this->toRead);
             $dataDefinitions = $this->readDataDefinitions($toRead['control']);
+
+            $this->automaticCahce->bindCacheNames($dataDefinitions);
+            
             if ($toRead['parent']) {
                 foreach ($dataDefinitions as $dataDefinition) {
                     $dataDefinition->setParent($toRead['parent']);
@@ -64,7 +71,8 @@ class DataLoaderPresenterListener extends Object
 
             $this->processDefinitions();
         }
-        
+
+        $this->automaticCahce->bindCacheTags($this->dataSpaces);
     }
 
     protected function processDefinitions()
@@ -80,11 +88,10 @@ class DataLoaderPresenterListener extends Object
      * Reads DataDefinitions from control and its childs
      * 
      * @param Control $control
-     * @return array
+     * @return ControlDataDefinition[]
      */
     protected function readDataDefinitions($control)
     {
-
         $dataDefinition = $this->readControlDataDefinition($control);
 
         $childDataDefinitions = $this->readChildDataDefinitions($control);
@@ -104,11 +111,11 @@ class DataLoaderPresenterListener extends Object
 
     private function readControlDataDefinition($control)
     {
-        
         $dataDefinition = null;
 
         if ($control instanceof DataLoaderControl && !$this->isProcessed($control)) {
             $dataDefinition = $control->getDataDefinition($this);
+            
             if ($dataDefinition instanceof DataDefinition || is_array($dataDefinition)) {
                 $dataDefinition = new ControlDataDefinition($control, $dataDefinition);
             }
@@ -126,7 +133,7 @@ class DataLoaderPresenterListener extends Object
     private function readChildDataDefinitions($control)
     {
         $childDataDefinitions = [];
-        if ($control instanceof Container2) {
+        if ($control instanceof ComponentContainer) {
             foreach ($control->getComponents() as $subcontrol) {
                 $childDataDefinitions = array_merge($childDataDefinitions, $this->readDataDefinitions($subcontrol));
             }
@@ -147,12 +154,12 @@ class DataLoaderPresenterListener extends Object
         }
         return false;
     }
-    
+
     function getDataDefinitions()
     {
         return $this->dataDefinitions;
     }
-    
+
     function getDataSpaces()
     {
         return $this->dataSpaces;
