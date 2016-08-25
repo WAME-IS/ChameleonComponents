@@ -106,6 +106,9 @@ class DataSpacesBuilder
                 }
                 
                 $dataSpace->setDataDefinition(Combiner::combineDataDefinitions($dataSpace->getDataDefinition(), $dataDefinition));
+                
+                $dataDefinition->onProcess($dataSpace->getDataDefinition());
+                
                 return;
             }
         }
@@ -117,6 +120,8 @@ class DataSpacesBuilder
             $dataSpace->setParent($parentDataSpace);
         }
 
+        $dataDefinition->onProcess($dataSpace->getDataDefinition());
+        
         $this->addDataSpace($dataSpace);
     }
 

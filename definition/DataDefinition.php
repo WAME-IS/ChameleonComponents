@@ -25,6 +25,9 @@ class DataDefinition extends Object
 
     /** @var array [string => mixed] */
     private $hints;
+    
+    /** @var callable[] */
+    public $onProcess;
 
     /**
      * @param DataDefinitionTarget $target
