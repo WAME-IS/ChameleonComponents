@@ -16,6 +16,7 @@ use Wame\ChameleonComponents\Definition\ControlDataDefinition;
 use Wame\ChameleonComponents\Definition\DataDefinition;
 use Wame\ChameleonComponents\Definition\DataSpace;
 use Wame\ChameleonComponents\Definition\RecursiveTreeDefinitionIterator;
+use Wame\Core\Event\PresenterStageChangeEvent;
 
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
@@ -44,8 +45,13 @@ class DataLoaderPresenterListener extends Object
         $this->automaticCahce = $automaticCahce;
         $application->onPresenter[] = function($application, $presenter) {
             if ($presenter instanceof BasePresenter) {
-                $presenter->onBeforeRender[] = function() use ($presenter) {
-                    $this->load($presenter);
+                $presenter->onStageChange[] = function(PresenterStageChangeEvent $event) {
+                    if ($event->enters('signal')) {
+                        $this->load($event->getPresenter());
+                    }
+//                    if (/* $event->getPresenter()->getSignal() && */ $event->leaves('signal')) {
+//                        $this->findChanges($event->getPresenter());
+//                    }
                 };
             }
         };
@@ -60,7 +66,7 @@ class DataLoaderPresenterListener extends Object
             $dataDefinitions = $this->readDataDefinitions($toRead['control']);
 
             $this->automaticCahce->bindCacheNames($dataDefinitions);
-            
+
             if ($toRead['parent']) {
                 foreach ($dataDefinitions as $dataDefinition) {
                     $dataDefinition->setParent($toRead['parent']);
@@ -75,10 +81,43 @@ class DataLoaderPresenterListener extends Object
         $this->automaticCahce->bindCacheTags($this->dataSpaces);
     }
 
+//    public function findChanges(Presenter $presenter)
+//    {
+//        $previousDataDefinitions = $this->dataDefinitions;
+//        $this->dataDefinitions = null;
+//        $this->dataSpaces = null;
+//
+//        $this->toRead[] = ['control' => $presenter, 'parent' => NULL];
+//
+//        while ($this->toRead) {
+//            $toRead = array_shift($this->toRead);
+//            $dataDefinitions = $this->readDataDefinitions($toRead['control']);
+//
+//            if ($toRead['parent']) {
+//                foreach ($dataDefinitions as $dataDefinition) {
+//                    $dataDefinition->setParent($toRead['parent']);
+//                }
+//            } else {
+//                $this->dataDefinitions = $dataDefinitions;
+//            }
+//        }
+//
+//        $dataDefinitionsDiffer = new DataDefinitionsDiffer();
+//        $changedDefinitions = $dataDefinitionsDiffer->diff($previousDataDefinitions, $this->dataDefinitions);
+//
+//        if ($changedDefinitions) {
+//            foreach ($changedDefinitions as $changedDefinition) {
+//                $changedDefinition->getControl()->redrawControl();
+//            }
+//
+//            $this->processDefinitions();
+//        }
+//    }
+
     protected function processDefinitions()
     {
         if ($this->dataDefinitions) {
-            //Optimalization of loading DataLoader, its loaded only if some definitions are found
+            //Optimalization of loading DataLoader, it is loaded only if some definitions are found
             $dataLoader = $this->container->getByType(DataLoader::class);
             $this->dataSpaces = $dataLoader->processDataDefinitions($this->dataDefinitions, $this->dataSpaces);
         }
@@ -115,7 +154,7 @@ class DataLoaderPresenterListener extends Object
 
         if ($control instanceof DataLoaderControl && !$this->isProcessed($control)) {
             $dataDefinition = $control->getDataDefinition($this);
-            
+
             if ($dataDefinition instanceof DataDefinition || is_array($dataDefinition)) {
                 $dataDefinition = new ControlDataDefinition($control, $dataDefinition);
             }
