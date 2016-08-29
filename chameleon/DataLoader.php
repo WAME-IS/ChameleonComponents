@@ -4,6 +4,7 @@ namespace Wame\ChameleonComponents;
 
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
+use Nette\InvalidArgumentException as InvalidArgumentException2;
 use Nette\Object;
 use RecursiveIteratorIterator;
 use Wame\ChameleonComponents\Definition\ControlDataDefinition;
@@ -94,7 +95,13 @@ class DataLoader extends Object
     {
         $driver = $dataSpace->getDataDefinition()->getHint('dataLoaderDriver', IDataLoaderDriver::class);
         if ($driver) {
-            return $driver;
+            if ($driver instanceof IDataLoaderDriver) {
+                return $driver;
+            } elseif (is_string($driver)) {
+                return $this->dataLoaderDriverRegister->getByName($driver);
+            } else {
+                throw new InvalidArgumentException2("Invalid hint type.");
+            }
         }
 
         foreach ($this->dataLoaderDriverRegister as $driver) {
@@ -127,7 +134,7 @@ class DataLoader extends Object
     private function getStatusName($dataSpace)
     {
         $qtn = $dataSpace->getDataDefinition()->getQueryType();
-        if(!$qtn) {
+        if (!$qtn) {
             $qtn = DataDefinition::DEFAULT_QUERY_TYPE;
         }
         $qt = $this->queryTypesRegister->getByName($qtn);
