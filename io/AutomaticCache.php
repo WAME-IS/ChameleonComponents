@@ -34,7 +34,7 @@ class AutomaticCache extends Object
     private function bindControlCacheName($control, $dataDefinitions)
     {
         $controlState = [];
-        $controlState[] = $dataDefinitions;
+        $controlState[] = [$dataDefinitions->getTarget(), $dataDefinitions->getKnownProperties(), $dataDefinitions->getHints(), $dataDefinitions->getQueryType()];
         $controlState[] = $control->getParameters();
         $controlStateHash = md5(serialize($controlState));
         
