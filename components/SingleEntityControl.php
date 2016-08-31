@@ -5,6 +5,7 @@ namespace Wame\ChameleonComponents\Components;
 use Doctrine\Common\Collections\Criteria;
 use Nette\Application\BadRequestException;
 use Nette\DI\Container;
+use Nette\InvalidArgumentException;
 use Wame\ChameleonComponents\Definition\DataDefinition;
 use Wame\ChameleonComponents\Definition\DataDefinitionTarget;
 use Wame\ChameleonComponents\IO\DataLoaderControl;
@@ -24,16 +25,15 @@ abstract class SingleEntityControl extends BaseControl implements DataLoaderCont
     public function __construct(Container $container, $entity = null)
     {
         parent::__construct($container);
-
-        if(!is_a($entity, $this->getEntityType())) {
-            $e = new \Nette\InvalidArgumentException("Invalid entity type");
-            $e->entity = $entity;
-            throw $e;
-        }
         
         $this->getStatus()->get($this->getEntityType(), function($entity) {
             if (!$entity) {
                 throw new BadRequestException("Entity with this id doesn't exist");
+            }
+            if (!is_a($entity, $this->getEntityType())) {
+                $e = new InvalidArgumentException("Invalid entity type");
+                $e->entity = $entity;
+                throw $e;
             }
             $this->entity = $entity;
         });
