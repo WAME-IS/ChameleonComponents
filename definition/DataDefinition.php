@@ -86,6 +86,9 @@ class DataDefinition extends Object
      */
     function getQueryType()
     {
+        if ($this->queryType == null) {
+            return self::DEFAULT_QUERY_TYPE;
+        }
         return $this->queryType;
     }
 

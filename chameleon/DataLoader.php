@@ -74,8 +74,6 @@ class DataLoader extends Object
         foreach ($iterator as $dataSpace) {
             /* @var $dataSpace DataSpace */
 
-            $this->putDefaultQueryType($dataSpace);
-
             $driver = $this->selectDataDriver($dataSpace);
 
             $callback = $driver->prepareCallback($dataSpace);
@@ -117,26 +115,12 @@ class DataLoader extends Object
 
     /**
      * @param DataSpace $dataSpace
-     */
-    private function putDefaultQueryType($dataSpace)
-    {
-        $dataDefinition = $dataSpace->getDataDefinition();
-        if (!$dataDefinition->getQueryType()) {
-            $dataDefinition->setQueryType(DataDefinition::DEFAULT_QUERY_TYPE);
-        }
-    }
-
-    /**
-     * @param DataSpace $dataSpace
      * @return string
      * @throws InvalidArgumentException
      */
     private function getStatusName($dataSpace)
     {
         $qtn = $dataSpace->getDataDefinition()->getQueryType();
-        if (!$qtn) {
-            $qtn = DataDefinition::DEFAULT_QUERY_TYPE;
-        }
         $qt = $this->queryTypesRegister->getByName($qtn);
         if ($qt) {
             return $qt->getStatusName($dataSpace);

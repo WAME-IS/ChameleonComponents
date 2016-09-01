@@ -69,7 +69,7 @@ class DataSpacesBuilder
                 continue;
             }
 
-            $this->processControlDefinition($controlDataDefinition, $iterator->getDepth());
+            $this->processControlDefinition($controlDataDefinition);
 
             $controlDataDefinition->setProcessed(true);
         }
@@ -82,7 +82,7 @@ class DataSpacesBuilder
     /**
      * @param ControlDataDefinition $controlDataDefinition
      */
-    private function processControlDefinition($controlDataDefinition, $depth)
+    private function processControlDefinition($controlDataDefinition)
     {
         foreach ($controlDataDefinition->getDataDefinitions() as $dataDefinition) {
             $this->processDefinition($dataDefinition, $controlDataDefinition->getControl());

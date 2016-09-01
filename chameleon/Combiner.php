@@ -170,14 +170,14 @@ class Combiner
 
         $queryType = array_shift($queryTypes);
         while ($q = array_shift($queryTypes)) {
-            if (!$q) {
+            if ($q == DataDefinition::DEFAULT_QUERY_TYPE) {
                 continue;
             }
-            if (!$queryType && $q) {
+            if ($queryType == DataDefinition::DEFAULT_QUERY_TYPE) {
                 $queryType = $q;
-            } else if ($q != $queryType) {
-                throw new InvalidArgumentException("Cannot use two different values for property 'queryType' $q and $queryType");
+                continue;
             }
+            throw new InvalidArgumentException("Cannot use two different values for property 'queryType' $q and $queryType");
         }
 
         return $queryType;

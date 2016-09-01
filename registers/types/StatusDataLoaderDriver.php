@@ -53,9 +53,6 @@ class StatusDataLoaderDriver implements IDataLoaderDriver
     private function getStatusName($dataSpace)
     {
         $qtn = $dataSpace->getDataDefinition()->getQueryType();
-        if(!$qtn) {
-            $qtn = DataDefinition::DEFAULT_QUERY_TYPE;
-        }
         $qt = $this->queryTypesRegister->getByName($qtn);
         if ($qt) {
             return $qt->getStatusName($dataSpace);
