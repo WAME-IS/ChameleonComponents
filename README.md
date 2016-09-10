@@ -112,7 +112,7 @@ Komponenty su poskladane v strome. Pri vyhladavani moznych realcii sa postupuje 
 Takymto sposobom nemusia byt zviazane len jednotlive komponenty ale aj listy. Napriklad zoznam tagov pre clanok.
 
 ## Smerom dole
-Relacie tymto smerom niesu na rozdiel od smeru hore pridane automaticky. Tento smer musia komponnety zadefinovat do niektorej svojej definicie. Pridavaju sa pomocou methody ```addRelation```
+Relacie tymto smerom niesu na rozdiel od smeru hore pridane automaticky. Tento smer musia komponnety zadefinovat do niektorej svojej definicie. Pridavaju sa pomocou methody ```addRelation```. Sluzia na pridavanie filtrov pre nadradeny obsah.
 
 ```
 $dataDefinition = new DataDefinition(new DataDefinitionTarget(ArticleEntity::class, true));
