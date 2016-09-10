@@ -5,6 +5,7 @@ namespace Wame\ChameleonComponents\Definition;
 use Doctrine\Common\Collections\Criteria;
 use Nette\InvalidArgumentException;
 use Nette\Object;
+use SplObjectStorage;
 
 /**
  * @author Dominik Gmiterko <ienze@ienze.me>
@@ -25,7 +26,10 @@ class DataDefinition extends Object
 
     /** @var array [string => mixed] */
     private $hints;
-    
+
+    /** @var SplObjectStorage */
+    private $relations;
+
     /** @var callable[] */
     public $onProcess;
 
@@ -38,8 +42,9 @@ class DataDefinition extends Object
     {
         $this->target = $target;
         $this->knownProperties = $knownProperties;
-        $this->hints = [];
         $this->queryType = $queryType;
+        $this->hints = [];
+        $this->relations = new SplObjectStorage();
     }
 
     /**
@@ -118,7 +123,7 @@ class DataDefinition extends Object
         $this->hints = $hints;
         return $this;
     }
-    
+
     /**
      * @param string $name
      * @param mixed $value
@@ -139,5 +144,30 @@ class DataDefinition extends Object
         }
         $this->queryType = $queryType;
         return $this;
+    }
+
+    /**
+     * @param DataDefinitionTarget $target
+     * @param Criteria $knownProperties
+     */
+    public function addRelation(DataDefinitionTarget $target, $knownProperties)
+    {
+        $this->relations[$target] = $knownProperties;
+    }
+
+    /**
+     * @param SplObjectStorage $relations
+     */
+    public function setRelations(SplObjectStorage $relations)
+    {
+        $this->relations = $relations;
+    }
+
+    /**
+     * @return SplObjectStorage
+     */
+    function getRelations()
+    {
+        return $this->relations;
     }
 }

@@ -38,6 +38,10 @@ class Combiner
                     function($dataDefinition) {
                     return $dataDefinition->getHints();
                 }, $dataDefinitions));
+        $relations = self::combineRelations(...array_map(
+                    function($dataDefinition) {
+                    return $dataDefinition->getRelations();
+                }, $dataDefinitions));
 
 
         if (!is_string($target->getType()) || $target->getType() == DataSpacesBuilder::ANY_TYPE_CHAR) {
@@ -46,6 +50,7 @@ class Combiner
 
         $dataDefinition = new DataDefinition($target, $knownProperties, $queryType);
         $dataDefinition->setHints($hints);
+        $dataDefinition->setRelations($relations);
         return $dataDefinition;
     }
 
@@ -200,6 +205,28 @@ class Combiner
         }
 
         return $newHints;
+    }
+    
+    /**
+     * Function combines relations.
+     * 
+     * @param array[] $hints
+     */
+    public static function combineRelations(...$relations)
+    {
+        if (count($relations) < 2) {
+            throw new InvalidArgumentException("At least two hints have to be specified.");
+        }
+
+        $newRelations = $relations[0];
+        unset($relations[0]);
+        foreach ($relations as $rels) {
+            foreach($rels as $target) {
+                $newRelations[$target] = $rels[$target];
+            }
+        }
+
+        return $newRelations;
     }
 
     /**
