@@ -260,9 +260,10 @@ class Combiner
             //order
             if ($c->getOrderings()) {
                 foreach ($c->getOrderings() as $by => $order) {
-                    if (array_key_exists($by, $newCriteria->getOrderings())) {
-                        self::throwCombineException("Order can be set only by one known properties.", $criteria);
-                    }
+                    // TODO: zabranit 2 komponentam setnut order je dobre ale samotny list si moze nastavit order a potom uz ziadna komponenta nieje schopna to ovplivnit
+//                    if (array_key_exists($by, $newCriteria->getOrderings())) {
+//                        self::throwCombineException("Order can be set only by one known properties.", $criteria);
+//                    }
                     $newCriteria->orderBy([$by => $order]);
                 }
             }
