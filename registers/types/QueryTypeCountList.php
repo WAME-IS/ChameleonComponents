@@ -15,6 +15,11 @@ class QueryTypeCountList implements IQueryType
      */
     public function getStatusName($dataSpace)
     {
-        return $dataSpace->getDataDefinition()->getTarget()->getType() . '-' . self::STATUS_SUFFIX;
+//        return $dataSpace->getDataDefinition()->getTarget()->getType() . '-' . self::STATUS_SUFFIX;
+        
+        /******************************************************************r.g*/
+        $control = $dataSpace->getParent()->getControl();
+        return \Wame\Utils\Strings::plural($control->getListType()) . '-' . self::STATUS_SUFFIX;
+        /**************************************************************end*r.g*/
     }
 }
