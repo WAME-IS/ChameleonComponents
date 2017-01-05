@@ -3,6 +3,7 @@
 namespace Wame\ChameleonComponents\IO;
 
 use Wame\ChameleonComponents\Definition\ControlDataDefinition;
+use Wame\ChameleonComponents\Definition\DataDefinition;
 use Wame\Core\Cache\TemplatingCache;
 use Wame\Core\Status\ControlStatus;
 
@@ -13,7 +14,6 @@ use Wame\Core\Status\ControlStatus;
  */
 interface DataLoaderControl
 {
-
     /**
      * Get definition of data that should be loaded by DataLoader
      * 
@@ -30,4 +30,5 @@ interface DataLoaderControl
      * @return TemplatingCache
      */
     public function getComponentCache();
+
 }

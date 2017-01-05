@@ -75,7 +75,9 @@ abstract class SingleEntityControl extends BaseControl implements DataLoaderCont
     }
 
     /**
-     * @return Type of entity used
+     * Return type of entity used
+     *
+     * @return string
      */
     protected abstract function getEntityType();
 }
