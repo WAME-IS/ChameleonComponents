@@ -3,15 +3,20 @@
     "version": "0.0.1",
     "description": "Powerful tool for making components that can adapt to its surroundings like chameleon.",
     "homepage": "http://wame.sk/cms-wame-admin",
+    "minimum-stability": "dev",
     "authors": [
         {
-            "name": "Wame",
+            "name": "WAME s.r.o.",
             "homepage": "http://wame.sk"
         }
     ],
+    "repositories": [
+        { "type": "composer", "url": "http://packages.wame.sk" }
+    ],
+    "config": { "secure-http": false },
     "require": {
-        "wame/Core": "*",
-        "wame/ComponentModule": "*"
+        "wame/Core": "0.0.*",
+        "wame/ComponentModule": "0.0.1*"
     },
     "autoload": {
         "classmap": [
