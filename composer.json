@@ -15,7 +15,7 @@
     ],
     "config": { "secure-http": false },
     "require": {
-        "wame/Core": "0.0.*",
+        "wame/Core": ">=0.0.1",
         "wame/ComponentModule": "0.0.*"
     },
     "autoload": {
